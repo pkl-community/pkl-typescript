@@ -1,0 +1,32 @@
+{
+  "name": "@pkl-community/pkl-typescript",
+  "description": "Typescript bindings for Pkl",
+  "version": "0.0.2",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pkl-community/pkl-typescript.git"
+  },
+  "publishConfig": {
+    "@pkl-community:registry": "https://registry.npmjs.org"
+  },
+  "author": "Pkl community Developers",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/pkl-community/pkl-typescript#readme",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "build": "tsc --declaration"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.48.0",
+    "@typescript-eslint/parser": "^5.48.0",
+    "eslint": "^8.31.0",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "msgpackr": "^1.10.1"
+  }
+}
