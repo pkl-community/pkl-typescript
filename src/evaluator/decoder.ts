@@ -1,5 +1,16 @@
 import * as msgpackr from "msgpackr";
-import {DataSize, DataSizeUnit, Duration, DurationUnit, IntSeq, Pair, Regex} from "../types/pkl";
+import {
+  Any,
+  AnyObject,
+  BaseObject,
+  DataSize,
+  DataSizeUnit,
+  Duration,
+  DurationUnit,
+  IntSeq,
+  Pair,
+  Regex
+} from "../types/pkl";
 
 const
   codeObject = 0x1 as const,
@@ -52,11 +63,11 @@ export class Decoder {
     })
   }
 
-  decode(bytes: Uint8Array): unknown {
+  decode(bytes: Uint8Array): Any {
     return this.decodeAny(this.decoder.decode(bytes))
   }
 
-  decodeCode(code: code, rest: any[]): unknown {
+  decodeCode(code: code, rest: any[]): AnyObject {
     switch (code) {
       case codeObject: {
         const [name, moduleUri, entries] = rest as [string, string, [codeObjectMember, ...any][]];
@@ -90,7 +101,7 @@ export class Decoder {
       }
       case codePair: {
         const [first, second] = rest as [any, any]
-        const p: Pair<any, any> = {first, second}
+        const p: Pair<any, any> = {first: this.decodeAny(first), second: this.decodeAny(second)}
         return p
       }
       case codeIntSeq: {
@@ -117,10 +128,11 @@ export class Decoder {
     }
   }
 
-  decodeObject(name: string, moduleUri: string, entries: [codeObjectMember, ...any][]) {
-    const out: any = [];
+  decodeObject(name: string, moduleUri: string, rest: [codeObjectMember, ...any][]): BaseObject {
+    let entries = new Map<any, any>
+    const out: BaseObject = new BaseObject(moduleUri, name, entries)
 
-    for (const entry of entries) {
+    for (const entry of rest) {
       const [code, ...rest] = entry;
       switch (code) {
         case codeObjectMemberProperty: {
@@ -130,7 +142,7 @@ export class Decoder {
         }
         case codeObjectMemberEntry: {
           const [key, value] = rest as [any, any]
-          out[key] = this.decodeAny(value)
+          entries.set(this.decodeAny(key), this.decodeAny(value))
           break
         }
         case codeObjectMemberElement: {
@@ -141,16 +153,11 @@ export class Decoder {
       }
     }
 
-    if (out.length == 0) {
-      // no members, don't have to return something arrayish
-      return {...out}
-    }
-
     return out
   }
 
-  decodeMap(map: Map<any, any>) {
-    const out: Map<any, any> = new Map();
+  decodeMap(map: Map<any, any>): Map<Any, Any> {
+    const out = new Map();
 
     for (const [k, v] of map.entries()) {
       out.set(this.decodeAny(k), this.decodeAny(v))
@@ -159,11 +166,11 @@ export class Decoder {
     return out
   }
 
-  decodeList(list: any[]) {
+  decodeList(list: any[]): Any[] {
     return list.map((item) => this.decodeAny(item))
   }
 
-  decodeAny(value: any): unknown {
+  decodeAny(value: any): Any {
     if (value === null) {
       return value
     }

@@ -1,3 +1,47 @@
+export type Any = null | AnyObject | Map<Any, Any> | string | number | bigint | boolean
+export type AnyObject = BaseObject | Map<Any, Any> | Any[] | Set<Any> | Duration | DataSize | Pair<any, any> | IntSeq | Regex | {}
+
+// BaseObject is the TS representation of `pkl.base#Object`.
+// It is a container for properties (as object properties), entries (in an interior Map), and elements (as Array elements).
+export class BaseObject extends Array<any> {
+  // #moduleUri is the URI of the module that holds the definition of this object's class.
+  #moduleUri: string
+
+  // #name is the qualified name of Pkl object's class.
+  //
+  // Example:
+  //
+  // 		"pkl.base#Dynamic"
+  #name: string
+
+  // #entries is the set of key-value pairs in an Object.
+  #entries: Map<any, any>
+
+  constructor(moduleUri: string, name: string, entries: Map<any, any>) {
+    super()
+
+    this.#moduleUri = moduleUri;
+    this.#name = name
+    this.#entries = entries
+  }
+
+  _getEntry(key: any): any {
+    return this.#entries.get(key)
+  }
+
+  get _moduleUri(): string {
+    return this.#moduleUri
+  }
+
+  get _name(): string {
+    return this.#name
+  }
+
+  get _entryMap(): Map<any, any> {
+    return this.#entries
+  }
+}
+
 export type DataSizeUnit = "b" | "kb" | "kib" | "mb" | "mib" | "gb" | "gib" | "tb" | "tib" | "pb" | "pib"
 
 // DataSize is the TS representation of `pkl.base#DataSize`.

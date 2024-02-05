@@ -51,6 +51,6 @@ export async function loadProject(path: string): Promise<Project> {
   return loadProjectFromEvaluator(ev, path)
 }
 
-export function loadProjectFromEvaluator(ev: EvaluatorInterface, path: string): Promise<Project> {
-  return ev.evaluateOutputValue<Project>(FileSource(path))
+export async function loadProjectFromEvaluator(ev: EvaluatorInterface, path: string): Promise<Project> {
+  return await ev.evaluateOutputValue(FileSource(path)) as Project
 }
