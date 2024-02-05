@@ -12,6 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Create /tmp/bin and add to PATH
+        run: |
+          mkdir -p "{{ runner.temp }}/bin" && \
+          echo "{{ runner.temp }}/bin" >> "$GITHUB_PATH"
+
       - name: Fetch Pkl binary from GitHub release
         uses: dsaltares/fetch-gh-release-asset@master
         with:
