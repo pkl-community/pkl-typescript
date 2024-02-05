@@ -162,6 +162,10 @@ function normalizeName(name: String) =
     else
       pascaled
 
+function camelCase(str: String) =
+  let (parts = splitNameOnNonLettersOrDigits(str))
+  parts.mapIndexed((i, p) -> if (i == 0) p else p.capitalize()).join("")
+
 function renderImports(imports: List<String>): String =
   let (distinctImports = imports.distinct)
 
@@ -173,6 +177,6 @@ function renderImports(imports: List<String>): String =
     //   )
         new Listing {
           for (_, mod in distinctImports) {
-            "import \(normalizeName(mod)) from \"\(mod)\""
+            "import \(camelCase(mod)) from \"\(mod)\""
           }
         }.join("\n")

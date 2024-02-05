@@ -3,6 +3,12 @@ amends "pkl:test"
 import "../internal/utils.pkl"
 
 facts {
+  ["camelCase"] {
+    utils.camelCase("hello") == "hello"
+    utils.camelCase("hello space") == "helloSpace"
+    utils.camelCase("hello-hyphen") == "helloHyphen"
+    utils.camelCase("hello_underscore") == "helloUnderscore"
+  }
   ["normalizeName"] {
     utils.normalizeName("foo") == "Foo"
     utils.normalizeName("foo foo") == "FooFoo"
@@ -21,11 +27,11 @@ facts {
       "child_process"
     )) == """
       import fs from "fs"
-      import ChildProcess from "child_process"
+      import childProcess from "child_process"
       """
 
     utils.renderImports(List(
       "copy-to-clipboard"
-    )) == "import CopyToClipboard from \"copy-to-clipboard\""
+    )) == "import copyToClipboard from \"copy-to-clipboard\""
   }
 }
