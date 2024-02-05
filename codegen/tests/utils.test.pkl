@@ -1,0 +1,31 @@
+amends "pkl:test"
+
+import "../internal/utils.pkl"
+
+facts {
+  ["normalizeName"] {
+    utils.normalizeName("foo") == "Foo"
+    utils.normalizeName("foo foo") == "FooFoo"
+    utils.normalizeName("1 foo") == "N1Foo"
+    utils.normalizeName("bar ` $$ 你好 baz") == "Bar你好Baz"
+    utils.normalizeName("Go111") == "Go111"
+    utils.normalizeName("snake_case") == "SnakeCase"
+  }
+  ["renderImports"] {
+    utils.renderImports(List(
+      "fs"
+    )) == "import fs from \"fs\""
+
+    utils.renderImports(List(
+      "fs",
+      "child_process"
+    )) == """
+      import fs from "fs"
+      import ChildProcess from "child_process"
+      """
+
+    utils.renderImports(List(
+      "copy-to-clipboard"
+    )) == "import CopyToClipboard from \"copy-to-clipboard\""
+  }
+}

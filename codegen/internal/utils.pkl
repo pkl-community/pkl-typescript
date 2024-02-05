@@ -1,0 +1,178 @@
+module pkl.typescript.internal.utils
+
+import "pkl:reflect"
+
+local escaper = (c: Char) ->
+  if (c == "\n") #"\n"#
+  else if (c == "\"") #"\""#
+  else if (c == #"\"#) #"\\"#
+  else c
+
+/// Turn the Pkl string into a TypeScript string literal.
+///
+/// Renders raw string literals if the incoming string is multiline, or contains quotes.
+///
+/// Only newlines, double quotes and backslash literals need to be escaped in Go strings.
+function toTypescriptString(str: String): String =
+  if ((str.contains("\n") || str.contains("\"")) && !str.contains("`")) "`" + str + "`"
+  else "\"" + str.chars.map(escaper).join("") + "\""
+
+/// Converts a Pkl declaration (class, property, typealias) into a TypeScript name.
+/// If a member has an explicit `@typescript.Name` annotation, use it.
+///
+/// Otherwise, normalize the name and return it.
+///
+/// Normalization rules:
+///
+/// 1. Any non-letter and non-digit characters get stripped, and each proceding letter gets capitalized.
+/// 2. If a name does not start with a latin alphabet character, prefix with `N`.
+/// 3. Capitalize names so they get exported.
+function toTypescriptName(source: reflect.Declaration): String =
+  source
+    .annotations
+    .findOrNull((it) -> it.getClass().toString() == "pkl.typescript.typescript#Name")
+    ?.value
+  ??
+    // edge case: if the source is the module's companion class, use the module name and not the class name.
+    let (_name =
+      if (source is reflect.Class && source.enclosingDeclaration.moduleClass == source)
+        source.enclosingDeclaration.name.split(".").last
+      else source.name
+    )
+      normalizeName(_name)
+
+/// Sourced from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#keywords
+keywords: List<String> = List(
+  // Reserved words
+  "break",
+  "case",
+  "catch",
+  "class",
+  "const",
+  "continue",
+  "debugger",
+  "default",
+  "delete",
+  "do",
+  "else",
+  "export",
+  "extends",
+  "false",
+  "finally",
+  "for",
+  "function",
+  "if",
+  "import",
+  "in",
+  "instanceof",
+  "new",
+  "null",
+  "return",
+  "super",
+  "switch",
+  "this",
+  "throw",
+  "true",
+  "try",
+  "typeof",
+  "var",
+  "void",
+  "while",
+  "with",
+
+  // Reserved in strict mode
+  "let",
+  "static",
+  "yield",
+
+  // Reserved in async code
+  "await",
+
+  // Future reserved
+  "enum",
+
+  // Future reserved in strict mode
+
+  "implements",
+  "interface",
+  "package",
+  "private",
+  "protected",
+  "public",
+
+  // Future reserved in older EMCAScript standards
+  "abstract",
+  "boolean",
+  "byte",
+  "char",
+  "double",
+  "final",
+  "float",
+  "goto",
+  "int",
+  "long",
+  "native",
+  "short",
+  "synchronized",
+  "throws",
+  "transient",
+  "volatile",
+
+
+  // Identifiers with special meaning
+  "arguments",
+  "as",
+  "async",
+  "eval",
+  "from",
+  "get",
+  "of",
+  "set"
+)
+
+function renderDocComment(docComment: String, indent: String) =
+  docComment
+    .split(Regex(#"\r?\n"#))
+    .map((it) ->
+      if (it.trim().isBlank) "\(indent)//"
+      else "\(indent)// \(it)"
+    )
+    .join("\n")
+
+function renderHeaderComment(`module`: reflect.Module) =
+  "// Code generated from Pkl module `\(`module`.name)`. DO NOT EDIT."
+
+
+function canBeNormalizedToEnumName(name: String) =
+  name == "" || splitNameOnNonLettersOrDigits(name).length > 0
+
+function normalizeEnumName(name: String) =
+  if (name == "") "Empty"
+  else normalizeName(name)
+
+function splitNameOnNonLettersOrDigits(name: String) =
+  name.split(Regex(#"(?u)[^\p{L}\d]"#))
+
+function normalizeName(name: String) =
+  let (parts = splitNameOnNonLettersOrDigits(name))
+  // TODO(Jason): Consider camelCase instead of PascalCase. Types vs variables?
+  let (pascaled = parts.map((p) -> p.capitalize()).join(""))
+    if (pascaled[0].matches(Regex(#"[^A-Z]"#)))
+      "N" + pascaled
+    else
+      pascaled
+
+function renderImports(imports: List<String>): String =
+  let (distinctImports = imports.distinct)
+
+    // if (distinctImports.length == 1) "import \(toTypescriptString(distinctImports.first))"
+    // else
+    //   let (groupedImports = distinctImports
+    //     .sort()
+    //     .groupBy((it) -> if (it.contains("/")) "3rdparty" else "stdlib")
+    //   )
+        new Listing {
+          for (_, mod in distinctImports) {
+            "import \(normalizeName(mod)) from \"\(mod)\""
+          }
+        }.join("\n")

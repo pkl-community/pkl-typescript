@@ -1,0 +1,87 @@
+/// Representation of a type in TypeScript.
+@Unlisted
+abstract module pkl.typescript.internal.Type
+
+import "Type.pkl"
+import "utils.pkl"
+
+/// The imports required by this type.
+imports: List<String>
+
+/// The TypeScript representation of this type.
+///
+/// [typescriptModule] is the full path of the module that this type appears in.
+abstract function render(typescriptModule: String): String
+
+class Record extends Type {
+    key: Type
+
+    elem: Type
+
+    imports = elem.imports
+
+    function render(typescriptModule: String) =
+      "Record<\(key.render(typescriptModule)), \(elem.render(typescriptModule))>"
+}
+
+class Array extends Type {
+  elem: Type
+
+  imports = elem.imports
+
+  function render(typescriptModule: String) = "[]\(elem.render(typescriptModule))"
+}
+
+class Set extends Type {
+  elem: Type
+
+  imports = elem.imports
+
+  function render(typescriptModule: String) = "Set<\(elem.render(typescriptModule))>"
+}
+
+class Tuple extends Type {
+  elems: List<Type>
+
+  imports = elem.imports
+
+  function render(typescriptModule: String) = "readonly [" +
+    elems.map((e) -> e.render(typescriptModule)).join(", ")
+    + "]"
+}
+
+class Nullable extends Type {
+  elem: Type
+
+  imports = elem.imports
+
+  function render(typescriptModule: String) = "\(elem.render(typescriptModule))|null"
+}
+
+class Declared extends Type {
+  /// The full import path for this type.
+  importPath: String?
+
+  imports = (if (importPath != null) List(importPath) else List())
+    + if (typeArguments != null) typeArguments.flatMap((t) -> t.imports) else List()
+
+  /// The module the type is found in
+  `module`: String?
+
+  /// The name of the type
+  typeName: String
+
+  /// The type arguments, if any.
+  typeArguments: List<Type>?
+
+  function renderBase(typescriptModule: String) =
+    if (`module` != null && typescriptModule != importPath) "\(utils.normalizeName(`module`)).\(typeName)"
+    else typeName
+
+  function renderTypeArguments(typescriptModule: String) =
+    if (typeArguments == null) ""
+    else "<" + typeArguments.map((t) -> t.render(typescriptModule)).join(", ") + ">"
+
+  function render(typescriptModule: String) =
+    renderBase(typescriptModule) + renderTypeArguments(typescriptModule)
+}
