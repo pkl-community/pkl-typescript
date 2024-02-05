@@ -29,7 +29,7 @@ class Array extends Type {
 
   imports = elem.imports
 
-  function render(typescriptModule: String) = "[]\(elem.render(typescriptModule))"
+  function render(typescriptModule: String) = "Array<\(elem.render(typescriptModule))>"
 }
 
 class Set extends Type {

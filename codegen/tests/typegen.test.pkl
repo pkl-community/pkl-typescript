@@ -72,24 +72,20 @@ facts {
     generateType(reflectedMaps.properties["res1"].type) == "Record<string, string>"
     generateType(reflectedMaps.properties["res2"].type) == "Record<string, Record<string, string>>"
     generateType(reflectedMaps.properties["res3"].type) == "Record<string, string>"
-    generateType(reflectedMaps.properties["res4"].type) == "Record<string, []boolean>"
+    generateType(reflectedMaps.properties["res4"].type) == "Record<string, Array<boolean>>"
   }
   ["arrays"] {
-    generateType(reflectedArrays.properties["res1"].type) == "[]string"
-    generateType(reflectedArrays.properties["res2"].type) == "[]Record<string, string>"
-    generateType(reflectedArrays.properties["res3"].type) == "[]string"
-    generateType(reflectedArrays.properties["res4"].type) == "[]Record<string, string>"
+    generateType(reflectedArrays.properties["res1"].type) == "Array<string>"
+    generateType(reflectedArrays.properties["res2"].type) == "Array<Record<string, string>>"
+    generateType(reflectedArrays.properties["res3"].type) == "Array<string>"
+    generateType(reflectedArrays.properties["res4"].type) == "Array<Record<string, string>>"
   }
   ["nullables"] {
     generateType(reflectedNullables.properties["res1"].type) == "string|null"
     generateType(reflectedNullables.properties["res2"].type) == "boolean|null"
-    generateType(reflectedNullables.properties["res3"].type) == "[]string|null"
-    generateType(reflectedNullables.properties["res4"].type) == "[]string|null"
-    
-    // generateType(reflectedNullables.properties["res5"].type) == "[]string|null"
-    // Currently failing: input is "Listing<String?>?", outputs "[]string|null|null"
-    // Should we use Array<T> instead of []T for this purpose alone?
-    
+    generateType(reflectedNullables.properties["res3"].type) == "Array<string|null>"
+    generateType(reflectedNullables.properties["res4"].type) == "Array<string>|null"
+    generateType(reflectedNullables.properties["res5"].type) == "Array<string|null>|null"
     generateType(reflectedNullables.properties["res6"].type) == "Record<string|null, string>"
     generateType(reflectedNullables.properties["res7"].type) == "Record<string, string>|null"
     generateType(reflectedNullables.properties["res8"].type) == "Record<string|null, string|null>|null"
