@@ -9,6 +9,11 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        pklVersion: ["0.25.0", "0.25.1"]
+
     steps:
       - uses: actions/checkout@v2
 
@@ -21,12 +26,11 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: apple/pkl
-          # TODO: Parameterise version
-          # TODO: Test on range of Pkl versions using matrix
-          version: tags/0.25.1
+          version: tags/${{ matrix.pklVersion }}
           file: pkl-linux-amd64
           target: "{{ runner.temp }}/bin/pkl"
           token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Make pkl binary executable
         run: chmod +x "{{ runner.temp }}/bin/pkl"
 
