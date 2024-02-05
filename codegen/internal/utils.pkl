@@ -168,15 +168,8 @@ function camelCase(str: String) =
 
 function renderImports(imports: List<String>): String =
   let (distinctImports = imports.distinct)
-
-    // if (distinctImports.length == 1) "import \(toTypescriptString(distinctImports.first))"
-    // else
-    //   let (groupedImports = distinctImports
-    //     .sort()
-    //     .groupBy((it) -> if (it.contains("/")) "3rdparty" else "stdlib")
-    //   )
-        new Listing {
-          for (_, mod in distinctImports) {
-            "import \(camelCase(mod)) from \"\(mod)\""
-          }
-        }.join("\n")
+    new Listing {
+      for (_, mod in distinctImports) {
+        "import \(camelCase(mod)) from \"\(mod)\""
+      }
+    }.join("\n")
