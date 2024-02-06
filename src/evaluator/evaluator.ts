@@ -13,8 +13,8 @@ import {Evaluate} from "../types/outgoing";
 import {Any} from "../types/pkl";
 
 
-// EvaluatorInterface is an interface for evaluating Pkl modules.
-export interface EvaluatorInterface {
+// Evaluator is an interface for evaluating Pkl modules.
+export interface Evaluator {
   // evaluateModule evaluates the given module, and writes it to the value pointed by
   // out.
   //
@@ -49,7 +49,7 @@ export interface EvaluatorInterface {
   closed: boolean
 }
 
-export class Evaluator implements EvaluatorInterface {
+export class EvaluatorImpl implements Evaluator {
   closed: boolean = false;
   pendingRequests: Map<string, { resolve: (resp: EvaluateResponse) => void, reject: (err: any) => void }>
   resourceReaders: ResourceReader[] = []
@@ -240,12 +240,12 @@ export class Evaluator implements EvaluatorInterface {
   private static U64_MASK = ((1n << 64n) - 1n)
   private static U63_MASK = ((1n << 63n) - 1n)
   private randomInt63(): bigint {
-    this.randState = (this.randState + 0x9e3779b97f4a7c15n) & Evaluator.U64_MASK;
+    this.randState = (this.randState + 0x9e3779b97f4a7c15n) & EvaluatorImpl.U64_MASK;
     let next: bigint = this.randState;
-    next = ((next ^ (next >> 30n)) * 0xbf58476d1ce4e5b9n) & Evaluator.U64_MASK;
-    next = ((next ^ (next >> 27n)) * 0x94d049bb133111ebn) & Evaluator.U64_MASK;
+    next = ((next ^ (next >> 30n)) * 0xbf58476d1ce4e5b9n) & EvaluatorImpl.U64_MASK;
+    next = ((next ^ (next >> 27n)) * 0x94d049bb133111ebn) & EvaluatorImpl.U64_MASK;
     next = next ^ (next >> 31n);
-    return next & Evaluator.U63_MASK
+    return next & EvaluatorImpl.U63_MASK
   }
 }
 

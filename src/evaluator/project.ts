@@ -1,5 +1,5 @@
 import {PreconfiguredOptions, ProjectDependencies} from "./evaluator_options";
-import {EvaluatorInterface} from "./evaluator";
+import {Evaluator} from "./evaluator";
 import {FileSource} from "./module_source";
 import {newEvaluator} from "./evaluator_exec";
 
@@ -51,6 +51,6 @@ export async function loadProject(path: string): Promise<Project> {
   return loadProjectFromEvaluator(ev, path)
 }
 
-export async function loadProjectFromEvaluator(ev: EvaluatorInterface, path: string): Promise<Project> {
+export async function loadProjectFromEvaluator(ev: Evaluator, path: string): Promise<Project> {
   return await ev.evaluateOutputValue(FileSource(path)) as Project
 }
