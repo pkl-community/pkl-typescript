@@ -17,7 +17,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "build": "tsc --declaration"
+    "build": "tsc --declaration",
+    "test:codegen": "pkl test $(find . -name '*.test.pkl')"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
