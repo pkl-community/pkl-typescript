@@ -1,0 +1,29 @@
+amends "pkl:Project"
+
+local repo = "github.com/pkl-community/pkl-typescript"
+
+package {
+  name = "pkl.typescript"
+  baseUri = "package://pkg.pkl-lang.org/gh/pkl-community/pkl-typescript/codegen/src"
+  packageZipUrl = "https://\(repo)/releases/download/\(name)@\(version)/\(name)@\(version).zip"
+  version = read("../../VERSION.txt").text.trim()
+  authors {
+    "The Pkl Community <pkl-community@no-op.com>"
+    "Jack Kleeman <jackkleeman@gmail.com>"
+    "Jason Gwartz <jason@gwartz.me>"
+  }
+  sourceCodeUrlScheme = "https://\(repo)/tree/v\(version)/codegen/src%{path}#L%{line}-L%{endLine}"
+  sourceCode = "https://\(repo)"
+  description = "Pkl bindings for the TypeScript programming language"
+  license = "Apache-2.0"
+  exclude {
+    "tests"
+    "tests/**"
+  }
+}
+
+tests {
+  for (key, _ in import*("tests/*.pkl")) {
+    key
+  }
+}
