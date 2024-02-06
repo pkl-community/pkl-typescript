@@ -1,0 +1,6 @@
+import "types3.pkl"
+
+class Person {
+  bikes: Listing<types3.Bike>
+  otherbikes: Listing<types3.Bike>
+}

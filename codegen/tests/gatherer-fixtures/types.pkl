@@ -1,0 +1,49 @@
+class Bike {
+  isFixie: Boolean
+}
+
+abstract class Being {
+  isAlive: Boolean
+}
+
+/// A Person!
+open class Person extends Being {
+  bike: Bike
+
+  /// The person's first name
+  firstName: UInt16?
+
+  /// The person's last name
+  lastName: Mapping<String, UInt32?>
+}
+
+typealias BugKind = "butterfly" | "beetle\"" | "beetle one" | "beetle_one"
+
+typealias SymbolKind = "*" | "beetle\"" | "!!!" | "__"
+
+class Bug {
+  /// The owner of this bug.
+  owner: Person?
+
+  secondOwner: Person
+
+  /// The age of this bug
+  age: Int?
+
+  /// How long the bug holds its breath for
+  holdsBreathFor: Duration
+
+  size: DataSize
+
+  kind: BugKind
+
+  symbol: SymbolKind
+}
+
+class Cyclic {
+  a: String
+
+  b: Int
+
+  myself: Cyclic
+}

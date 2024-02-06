@@ -1,0 +1,12 @@
+abstract module pkl.typescript.internal.Gen
+
+import "TypescriptMapping.pkl"
+
+/// The generated contents for this particular mapping.
+mapping: TypescriptMapping
+
+/// All mappings
+mappings: List<TypescriptMapping>
+
+/// The TypeScript contents
+contents: String
