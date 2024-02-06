@@ -1,9 +1,17 @@
 export type Any = null | AnyObject | Map<Any, Any> | string | number | bigint | boolean
 export type AnyObject = BaseObject | Map<Any, Any> | Any[] | Set<Any> | Duration | DataSize | Pair<any, any> | IntSeq | Regex | {}
 
+export interface BaseObject extends Array<any> {
+  get _entries(): Map<any, any>
+
+  get _moduleUri(): string
+
+  get _name(): string
+}
+
 // BaseObject is the TS representation of `pkl.base#Object`.
 // It is a container for properties (as object properties), entries (in an interior Map), and elements (as Array elements).
-export class BaseObject extends Array<any> {
+export class BaseObjectImpl extends Array<any> implements BaseObject {
   // #moduleUri is the URI of the module that holds the definition of this object's class.
   #moduleUri: string
 
@@ -25,10 +33,6 @@ export class BaseObject extends Array<any> {
     this.#entries = entries
   }
 
-  _getEntry(key: any): any {
-    return this.#entries.get(key)
-  }
-
   get _moduleUri(): string {
     return this.#moduleUri
   }
@@ -37,7 +41,7 @@ export class BaseObject extends Array<any> {
     return this.#name
   }
 
-  get _entryMap(): Map<any, any> {
+  get _entries(): Map<any, any> {
     return this.#entries
   }
 }

@@ -2,7 +2,7 @@ import * as msgpackr from "msgpackr";
 import {
   Any,
   AnyObject,
-  BaseObject,
+  BaseObject, BaseObjectImpl,
   DataSize,
   DataSizeUnit,
   Duration,
@@ -130,7 +130,7 @@ export class Decoder {
 
   decodeObject(name: string, moduleUri: string, rest: [codeObjectMember, ...any][]): BaseObject {
     let entries = new Map<any, any>
-    const out: BaseObject = new BaseObject(moduleUri, name, entries)
+    const out: BaseObject = new BaseObjectImpl(moduleUri, name, entries)
 
     for (const entry of rest) {
       const [code, ...rest] = entry;

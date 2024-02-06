@@ -1,9 +1,9 @@
-// Project is the go representation of pkl.Project.
 import {PreconfiguredOptions, ProjectDependencies} from "./evaluator_options";
 import {EvaluatorInterface} from "./evaluator";
 import {FileSource} from "./module_source";
 import {newEvaluator} from "./evaluator_exec";
 
+// Project is the TS representation of pkl.Project.
 export type Project = {
   projectFileUri: string
   package?: ProjectPackage
@@ -13,7 +13,7 @@ export type Project = {
   dependencies: ProjectDependencies
 }
 
-// ProjectPackage is the go representation of pkl.Project#Package.
+// ProjectPackage is the TS representation of pkl.Project#Package.
 type ProjectPackage = {
   name: string
   baseUri: string

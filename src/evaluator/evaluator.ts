@@ -18,7 +18,7 @@ export interface EvaluatorInterface {
   // evaluateModule evaluates the given module, and writes it to the value pointed by
   // out.
   //
-  // This method is designed to work with Go modules that have been code generated from Pkl
+  // This method is designed to work with TS modules that have been code generated from Pkl
   // sources.
   evaluateModule(source: ModuleSource): Promise<Any>
 
