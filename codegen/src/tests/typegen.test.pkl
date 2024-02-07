@@ -68,17 +68,17 @@ facts {
     generateType(reflect.dataSizeType) == "PklTypes.DataSize"
     generateType(reflect.durationType) == "PklTypes.Duration"
   }
-  ["records"] {
-    generateType(reflectedMaps.properties["res1"].type) == "Record<string, string>"
-    generateType(reflectedMaps.properties["res2"].type) == "Record<string, Record<string, string>>"
-    generateType(reflectedMaps.properties["res3"].type) == "Record<string, string>"
-    generateType(reflectedMaps.properties["res4"].type) == "Record<string, Array<boolean>>"
+  ["maps"] {
+    generateType(reflectedMaps.properties["res1"].type) == "Map<string, string>"
+    generateType(reflectedMaps.properties["res2"].type) == "Map<string, Map<string, string>>"
+    generateType(reflectedMaps.properties["res3"].type) == "Map<string, string>"
+    generateType(reflectedMaps.properties["res4"].type) == "Map<string, Array<boolean>>"
   }
   ["arrays"] {
     generateType(reflectedArrays.properties["res1"].type) == "Array<string>"
-    generateType(reflectedArrays.properties["res2"].type) == "Array<Record<string, string>>"
+    generateType(reflectedArrays.properties["res2"].type) == "Array<Map<string, string>>"
     generateType(reflectedArrays.properties["res3"].type) == "Array<string>"
-    generateType(reflectedArrays.properties["res4"].type) == "Array<Record<string, string>>"
+    generateType(reflectedArrays.properties["res4"].type) == "Array<Map<string, string>>"
   }
   ["nullables"] {
     generateType(reflectedNullables.properties["res1"].type) == "string|null"
@@ -86,9 +86,9 @@ facts {
     generateType(reflectedNullables.properties["res3"].type) == "Array<string|null>"
     generateType(reflectedNullables.properties["res4"].type) == "Array<string>|null"
     generateType(reflectedNullables.properties["res5"].type) == "Array<string|null>|null"
-    generateType(reflectedNullables.properties["res6"].type) == "Record<string|null, string>"
-    generateType(reflectedNullables.properties["res7"].type) == "Record<string, string>|null"
-    generateType(reflectedNullables.properties["res8"].type) == "Record<string|null, string|null>|null"
+    generateType(reflectedNullables.properties["res6"].type) == "Map<string|null, string>"
+    generateType(reflectedNullables.properties["res7"].type) == "Map<string, string>|null"
+    generateType(reflectedNullables.properties["res8"].type) == "Map<string|null, string|null>|null"
   }
   ["pairs"] {
     generateType(reflectedPairs.properties["res1"].type) == "readonly [string, string]"

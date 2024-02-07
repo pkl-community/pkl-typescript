@@ -78,7 +78,7 @@ function generateMapping(
 ): Type =
   let (typeArgKey = type.typeArguments.getOrNull(0))
   let (typeArgValue = type.typeArguments.getOrNull(1))
-    new Type.Record {
+    new Type.Map {
       key =
         if (typeArgKey == null) anyType
         else generateType(typeArgKey, enclosing, seenMappings)

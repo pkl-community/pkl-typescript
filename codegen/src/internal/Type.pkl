@@ -14,14 +14,25 @@ imports: List<String>
 abstract function render(typescriptModule: String): String
 
 class Record extends Type {
-    key: Type
+  key: Type
 
-    elem: Type
+  elem: Type
 
-    imports = elem.imports
+  imports = elem.imports
 
-    function render(typescriptModule: String) =
-      "Record<\(key.render(typescriptModule)), \(elem.render(typescriptModule))>"
+  function render(typescriptModule: String) =
+    "Record<\(key.render(typescriptModule)), \(elem.render(typescriptModule))>"
+}
+
+class Map extends Type {
+  key: Type
+
+  elem: Type
+
+  imports = elem.imports
+
+  function render(typescriptModule: String) =
+    "Map<\(key.render(typescriptModule)), \(elem.render(typescriptModule))>"
 }
 
 class Array extends Type {
