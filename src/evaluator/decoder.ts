@@ -2,11 +2,12 @@ import * as msgpackr from "msgpackr";
 import {
   Any,
   AnyObject,
-  BaseObject, BaseObjectImpl,
+  BaseObject,
   DataSize,
   DataSizeUnit,
   Duration,
   DurationUnit,
+  Dynamic,
   IntSeq,
   Pair,
   Regex
@@ -71,6 +72,9 @@ export class Decoder {
     switch (code) {
       case codeObject: {
         const [name, moduleUri, entries] = rest as [string, string, [codeObjectMember, ...any][]];
+        if (name === "Dynamic" && moduleUri === "pkl:base") {
+          return this.decodeDynamic(entries)
+        }
         return this.decodeObject(name, moduleUri, entries)
       }
       case codeMap:
@@ -129,8 +133,7 @@ export class Decoder {
   }
 
   decodeObject(name: string, moduleUri: string, rest: [codeObjectMember, ...any][]): BaseObject {
-    let entries = new Map<Any, Any>
-    const out: BaseObject = new BaseObjectImpl(moduleUri, name, entries)
+    const out: BaseObject = {}
 
     for (const entry of rest) {
       const [code, ...rest] = entry;
@@ -141,19 +144,50 @@ export class Decoder {
           break
         }
         case codeObjectMemberEntry: {
-          const [key, value] = rest as [any, any]
-          entries.set(this.decodeAny(key), this.decodeAny(value))
-          break
+          throw new Error("Unexpected object member entry in non-Dynamic object")
         }
         case codeObjectMemberElement: {
-          const [i, value] = rest as [number, any]
-          out[i] = this.decodeAny(value)
-          break
+          throw new Error("Unexpected object member element in non-Dynamic object")
         }
       }
     }
 
     return out
+  }
+
+  decodeDynamic(rest: [codeObjectMember, ...any][]): Dynamic {
+    let properties: Record<string, Any> = {}
+    let entries = new Map<Any, Any>
+    let elements = new Array<Any>
+
+    for (const entry of rest) {
+      const [code, ...rest] = entry;
+      switch (code) {
+        case codeObjectMemberProperty: {
+          const [name, value] = rest as [any, any]
+          if (typeof name !== "string") {
+            throw new Error("object member property keys must be strings")
+          }
+          properties[name] = this.decodeAny(value)
+          break
+        }
+        case codeObjectMemberEntry: {
+          const [key, value] = rest as [any, any]
+          entries.set(this.decodeAny(key), this.decodeAny(value))
+          break
+        }
+        case codeObjectMemberElement: {
+          const [i, value] = rest as [any, any]
+          if (typeof i !== "number") {
+            throw new Error("object member element indices must be numbers")
+          }
+          elements[i] = this.decodeAny(value)
+          break
+        }
+      }
+    }
+
+    return {properties, entries, elements}
   }
 
   decodeMap(map: Map<any, any>): Map<Any, Any> {

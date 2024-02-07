@@ -1,47 +1,28 @@
 export type Any = null | AnyObject | Map<Any, Any> | string | number | bigint | boolean
-export type AnyObject = BaseObject | Map<Any, Any> | Any[] | Set<Any> | Duration | DataSize | Pair<any, any> | IntSeq | Regex | {}
+export type AnyObject =
+  BaseObject
+  | Dynamic
+  | Map<Any, Any>
+  | Any[]
+  | Set<Any>
+  | Duration
+  | DataSize
+  | Pair<any, any>
+  | IntSeq
+  | Regex
+  | {}
 
 // BaseObject is the TS representation of `pkl.base#Object`.
-// It is a container for properties (as object properties), entries (in an interior Map), and elements (as Array elements).
-export interface BaseObject extends Array<Any> {
-  // _entries is a getter for the entries map of key-value pairs in the object
-  get _entries(): Map<Any, Any>
-
-  // _moduleUri is a getter for the URI of the module that holds the definition of this object's class.
-  get _moduleUri(): string
-
-  // _name is a getter for the qualified name of Pkl object's class.
-  //
-  // Example:
-  //
-  // 		"pkl.base#Dynamic"
-  get _name(): string
+export type BaseObject = {
+  // object properties
+  [k: string]: Any
 }
 
-export class BaseObjectImpl extends Array<Any> implements BaseObject {
-  #moduleUri: string
-  #name: string
-  #entries: Map<Any, Any>
-
-  constructor(moduleUri: string, name: string, entries: Map<Any, Any>) {
-    super()
-
-    this.#moduleUri = moduleUri;
-    this.#name = name
-    this.#entries = entries
-  }
-
-  get _moduleUri(): string {
-    return this.#moduleUri
-  }
-
-  get _name(): string {
-    return this.#name
-  }
-
-  get _entries(): Map<Any, Any> {
-    return this.#entries
-  }
+// Dynamic is the TS representation of `pkl.base#Dynamic`.
+export type Dynamic = {
+  properties: { [key: string]: Any }
+  entries: Map<Any, Any>
+  elements: Any[]
 }
 
 export type DataSizeUnit = "b" | "kb" | "kib" | "mb" | "mib" | "gb" | "gib" | "tb" | "tib" | "pb" | "pib"
