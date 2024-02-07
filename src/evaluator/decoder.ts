@@ -213,14 +213,10 @@ export class Decoder {
       const [code, ...rest] = value
       return this.decodeCode(code, rest)
     }
-    switch (typeof value) {
-      case "object": {
-        // mapping case
-        return this.decodeMap(value as Map<any, any>)
-      }
-      default: {
-        return value
-      }
+    if (typeof value === "object") {
+      throw new Error(`unexpected object ${value} provided to decodeAny; expected primitive type or Array`)
     }
+    // primitives
+    return value
   }
 }
