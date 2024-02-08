@@ -75,7 +75,4 @@ export type Regex = {
 }
 
 // Pair is the TS representation of `pkl.base#Pair`.
-export type Pair<A, B> = {
-  first: A,
-  second: B,
-}
+export type Pair<A, B> = [A, B]

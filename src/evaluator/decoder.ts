@@ -105,7 +105,7 @@ export class Decoder {
       }
       case codePair: {
         const [first, second] = rest as [any, any]
-        const p: Pair<any, any> = {first: this.decodeAny(first), second: this.decodeAny(second)}
+        const p: Pair<Any, Any> = [this.decodeAny(first), this.decodeAny(second)]
         return p
       }
       case codeIntSeq: {
