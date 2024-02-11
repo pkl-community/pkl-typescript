@@ -5,3 +5,4 @@ export {
   newEvaluator, newEvaluatorWithCommand, newProjectEvaluator, newProjectEvaluatorWithCommand
 } from "./evaluator/evaluator_exec";
 export {newEvaluatorManager, newEvaluatorManagerWithCommand} from "./evaluator/evaluator_manager";
+export * from "./types/pkl"

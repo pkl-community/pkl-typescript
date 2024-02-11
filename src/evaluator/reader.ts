@@ -47,7 +47,7 @@ type PathElement = {
 // "secrets" when Reader.Scheme is called.
 //
 // Resources are cached by Pkl for the lifetime of an Evaluator. Therefore, cacheing is not needed
-// on the Go side as long as the same Evaluator is used.
+// on the TS side as long as the same Evaluator is used.
 //
 // Resources are read via the following Pkl expressions:
 //
@@ -69,7 +69,7 @@ export interface ResourceReader extends Reader {
 // "myscheme" when Reader.Scheme is called.
 //
 // Modules are cached by Pkl for the lifetime of an Evaluator. Therefore, cacheing is not needed
-// on the Go side as long as the same Evaluator is used.
+// on the TS side as long as the same Evaluator is used.
 //
 // Modules are read in Pkl via the import declaration:
 //

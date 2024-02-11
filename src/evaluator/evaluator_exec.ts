@@ -1,6 +1,6 @@
 import {EvaluatorOptions, PreconfiguredOptions, withProject} from "./evaluator_options";
 
-import {EvaluatorInterface} from "./evaluator";
+import {Evaluator} from "./evaluator";
 import {loadProjectFromEvaluator} from "./project";
 import {newEvaluatorManagerWithCommand} from "./evaluator_manager";
 
@@ -9,7 +9,7 @@ import {newEvaluatorManagerWithCommand} from "./evaluator_manager";
 //
 // If creating multiple evaluators, prefer using EvaluatorManager.NewEvaluator instead,
 // because it lessens the overhead of each successive evaluator.
-export function newEvaluator(opts: EvaluatorOptions): Promise<EvaluatorInterface> {
+export function newEvaluator(opts: EvaluatorOptions): Promise<Evaluator> {
   return newEvaluatorWithCommand([], opts)
 }
 
@@ -20,7 +20,7 @@ export function newEvaluator(opts: EvaluatorOptions): Promise<EvaluatorInterface
 //
 // When using project dependencies, they must first be resolved using the `pkl project resolve`
 // CLI command.
-export function newProjectEvaluator(projectDir: string, opts: EvaluatorOptions): Promise<EvaluatorInterface> {
+export function newProjectEvaluator(projectDir: string, opts: EvaluatorOptions): Promise<Evaluator> {
   return newProjectEvaluatorWithCommand(projectDir, [], opts)
 }
 
@@ -35,7 +35,7 @@ export function newProjectEvaluator(projectDir: string, opts: EvaluatorOptions):
 //
 // If creating multiple evaluators, prefer using EvaluatorManager.NewProjectEvaluator instead,
 // because it lessens the overhead of each successive evaluator.
-export async function newProjectEvaluatorWithCommand(projectDir: string, pklCmd: string[], opts: EvaluatorOptions): Promise<EvaluatorInterface> {
+export async function newProjectEvaluatorWithCommand(projectDir: string, pklCmd: string[], opts: EvaluatorOptions): Promise<Evaluator> {
   const manager = newEvaluatorManagerWithCommand(pklCmd)
   const projectEvaluator = await newEvaluator(PreconfiguredOptions)
   const project = await loadProjectFromEvaluator(projectEvaluator, projectDir+"/PklProject")
@@ -53,7 +53,7 @@ export async function newProjectEvaluatorWithCommand(projectDir: string, pklCmd:
 //
 // If creating multiple evaluators, prefer using EvaluatorManager.NewEvaluator instead,
 // because it lessens the overhead of each successive evaluator.
-export function newEvaluatorWithCommand(pklCmd: string[], opts: EvaluatorOptions): Promise<EvaluatorInterface> {
+export function newEvaluatorWithCommand(pklCmd: string[], opts: EvaluatorOptions): Promise<Evaluator> {
   const manager = newEvaluatorManagerWithCommand(pklCmd)
   return manager.newEvaluator(opts)
 }

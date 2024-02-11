@@ -1,4 +1,4 @@
-import {Evaluator, EvaluatorInterface} from "./evaluator";
+import {EvaluatorImpl, Evaluator} from "./evaluator";
 import {CreateEvaluator, OutgoingMessage, packMessage} from "../types/outgoing";
 import * as msgpackr from "msgpackr";
 import {
@@ -50,7 +50,7 @@ export interface EvaluatorManagerInterface {
   //
   // If calling into Pkl as a child process, the first time NewEvaluator is called, this will
   // start the child process.
-  newEvaluator(opts: EvaluatorOptions): Promise<EvaluatorInterface>
+  newEvaluator(opts: EvaluatorOptions): Promise<Evaluator>
 
   // newProjectEvaluator is an easy way to create an evaluator that is configured by the specified
   // projectDir.
@@ -59,7 +59,7 @@ export interface EvaluatorManagerInterface {
   //
   // When using project dependencies, they must first be resolved using the `pkl project resolve`
   // CLI command.
-  newProjectEvaluator(projectDir: string, opts: EvaluatorOptions): Promise<EvaluatorInterface>
+  newProjectEvaluator(projectDir: string, opts: EvaluatorOptions): Promise<Evaluator>
 }
 
 
@@ -71,7 +71,7 @@ export class EvaluatorManager implements EvaluatorManagerInterface {
     resolve: (resp: CreateEvaluatorResponse) => void,
     reject: (err: any) => void
   }> = new Map()
-  private evaluators: Map<bigint, Evaluator> = new Map()
+  private evaluators: Map<bigint, EvaluatorImpl> = new Map()
   private closed: boolean = false
   private version?: string
   private cmd: ChildProcessByStdio<Writable, Readable, null>;
@@ -129,7 +129,7 @@ export class EvaluatorManager implements EvaluatorManagerInterface {
     }))
   }
 
-  private getEvaluator(evaluatorId: bigint): Evaluator | undefined {
+  private getEvaluator(evaluatorId: bigint): EvaluatorImpl | undefined {
     const ev = this.evaluators.get(evaluatorId)
     if (!ev) {
       console.log("Received unknown evaluator id:", evaluatorId)
@@ -142,7 +142,7 @@ export class EvaluatorManager implements EvaluatorManagerInterface {
     stdout.pipe(this.streamDecoder)
     for await (const item of this.streamDecoder) {
       const decoded = decode(item);
-      let ev: Evaluator | undefined;
+      let ev: EvaluatorImpl | undefined;
       switch (decoded.code) {
         case codeEvaluateResponse:
           ev = this.getEvaluator(decoded.evaluatorId)
@@ -222,7 +222,7 @@ export class EvaluatorManager implements EvaluatorManagerInterface {
     return this.version
   }
 
-  async newEvaluator(opts: EvaluatorOptions): Promise<EvaluatorInterface> {
+  async newEvaluator(opts: EvaluatorOptions): Promise<Evaluator> {
     if (this.closed) {
       throw new Error("EvaluatorManager has been closed")
     }
@@ -250,13 +250,13 @@ export class EvaluatorManager implements EvaluatorManagerInterface {
     if (response.error && response.error !== "") {
       throw new Error(response.error)
     }
-    const ev = new Evaluator(response.evaluatorId, this);
+    const ev = new EvaluatorImpl(response.evaluatorId, this);
     this.evaluators.set(response.evaluatorId, ev)
 
     return ev
   }
 
-  async newProjectEvaluator(projectDir: string, opts: EvaluatorOptions): Promise<EvaluatorInterface> {
+  async newProjectEvaluator(projectDir: string, opts: EvaluatorOptions): Promise<Evaluator> {
     const projectEvaluator = await this.newEvaluator(PreconfiguredOptions)
     const project = await loadProjectFromEvaluator(projectEvaluator, projectDir + "/PklProject")
 

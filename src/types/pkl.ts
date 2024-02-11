@@ -1,3 +1,30 @@
+export type Any = null | AnyObject | Map<Any, Any> | string | number | bigint | boolean
+export type AnyObject =
+  BaseObject
+  | Dynamic
+  | Map<Any, Any>
+  | Any[]
+  | Set<Any>
+  | Duration
+  | DataSize
+  | Pair<any, any>
+  | IntSeq
+  | Regex
+  | {}
+
+// BaseObject is the TS representation of `pkl.base#Object`.
+export type BaseObject = {
+  // object properties
+  [k: string]: Any
+}
+
+// Dynamic is the TS representation of `pkl.base#Dynamic`.
+export type Dynamic = {
+  properties: { [key: string]: Any }
+  entries: Map<Any, Any>
+  elements: Any[]
+}
+
 export type DataSizeUnit = "b" | "kb" | "kib" | "mb" | "mib" | "gb" | "gib" | "tb" | "tib" | "pb" | "pib"
 
 // DataSize is the TS representation of `pkl.base#DataSize`.
@@ -48,7 +75,4 @@ export type Regex = {
 }
 
 // Pair is the TS representation of `pkl.base#Pair`.
-export type Pair<A, B> = {
-  first: A,
-  second: B,
-}
+export type Pair<A, B> = [A, B]
