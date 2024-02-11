@@ -10,30 +10,31 @@ import {
 } from "../types/codes";
 import {ModuleReader, ResourceReader} from "./reader";
 import {Evaluate} from "../types/outgoing";
+import {Any} from "../types/pkl";
 
 
-// EvaluatorInterface is an interface for evaluating Pkl modules.
-export interface EvaluatorInterface {
+// Evaluator is an interface for evaluating Pkl modules.
+export interface Evaluator {
   // evaluateModule evaluates the given module, and writes it to the value pointed by
   // out.
   //
-  // This method is designed to work with Go modules that have been code generated from Pkl
+  // This method is designed to work with TS modules that have been code generated from Pkl
   // sources.
-  evaluateModule<T>(source: ModuleSource): Promise<T>
+  evaluateModule(source: ModuleSource): Promise<Any>
 
   // evaluateOutputText evaluates the `output.text` property of the given module.
   evaluateOutputText(source: ModuleSource): Promise<string>
 
   // evaluateOutputValue evaluates the `output.value` property of the given module,
   // and writes to the value pointed by out.
-  evaluateOutputValue<T>(source: ModuleSource): Promise<T>
+  evaluateOutputValue(source: ModuleSource): Promise<Any>
 
   // evaluateOutputFiles evaluates the `output.files` property of the given module.
   evaluateOutputFiles(source: ModuleSource): Promise<Record<string, string>>
 
   // evaluateExpression evaluates the provided expression on the given module source, and writes
   // the result into the value pointed by out.
-  evaluateExpression<T>(source: ModuleSource, expr: string): Promise<T>
+  evaluateExpression(source: ModuleSource, expr: string): Promise<Any>
 
   // evaluateExpressionRaw evaluates the provided module, and returns the underlying value's raw
   // bytes.
@@ -48,7 +49,7 @@ export interface EvaluatorInterface {
   closed: boolean
 }
 
-export class Evaluator implements EvaluatorInterface {
+export class EvaluatorImpl implements Evaluator {
   closed: boolean = false;
   pendingRequests: Map<string, { resolve: (resp: EvaluateResponse) => void, reject: (err: any) => void }>
   resourceReaders: ResourceReader[] = []
@@ -64,9 +65,9 @@ export class Evaluator implements EvaluatorInterface {
     this.manager.close()
   }
 
-  async evaluateExpression<T>(source: ModuleSource, expr: string): Promise<T> {
+  async evaluateExpression<T>(source: ModuleSource, expr: string): Promise<Any> {
     const bytes = await this.evaluateExpressionRaw(source, expr)
-    return this.manager.decoder.decode(bytes) as T
+    return this.manager.decoder.decode(bytes)
   }
 
   async evaluateExpressionRaw(source: ModuleSource, expr: string): Promise<Uint8Array> {
@@ -99,20 +100,20 @@ export class Evaluator implements EvaluatorInterface {
     return resp.result
   }
 
-  evaluateModule<T>(source: ModuleSource): Promise<T> {
+  evaluateModule<T>(source: ModuleSource): Promise<Any> {
     return this.evaluateExpression<T>(source, "")
   }
 
-  evaluateOutputFiles(source: ModuleSource): Promise<Record<string, string>> {
-    return this.evaluateExpression<Record<string, string>>(source, "output.files.toMap().mapValues((_, it) -> it.text)")
+  async evaluateOutputFiles(source: ModuleSource): Promise<Record<string, string>> {
+    return await this.evaluateExpression(source, "output.files.toMap().mapValues((_, it) -> it.text)") as Record<string, string>
   }
 
-  evaluateOutputText(source: ModuleSource): Promise<string> {
-    return this.evaluateExpression<string>(source, "output.text")
+  async evaluateOutputText(source: ModuleSource): Promise<string> {
+    return await this.evaluateExpression(source, "output.text") as string
   }
 
-  evaluateOutputValue<T>(source: ModuleSource): Promise<T> {
-    return this.evaluateExpression<T>(source, "output.value")
+  evaluateOutputValue(source: ModuleSource): Promise<Any> {
+    return this.evaluateExpression(source, "output.value")
   }
 
   handleEvaluateResponse(msg: EvaluateResponse) {
@@ -239,12 +240,12 @@ export class Evaluator implements EvaluatorInterface {
   private static U64_MASK = ((1n << 64n) - 1n)
   private static U63_MASK = ((1n << 63n) - 1n)
   private randomInt63(): bigint {
-    this.randState = (this.randState + 0x9e3779b97f4a7c15n) & Evaluator.U64_MASK;
+    this.randState = (this.randState + 0x9e3779b97f4a7c15n) & EvaluatorImpl.U64_MASK;
     let next: bigint = this.randState;
-    next = ((next ^ (next >> 30n)) * 0xbf58476d1ce4e5b9n) & Evaluator.U64_MASK;
-    next = ((next ^ (next >> 27n)) * 0x94d049bb133111ebn) & Evaluator.U64_MASK;
+    next = ((next ^ (next >> 30n)) * 0xbf58476d1ce4e5b9n) & EvaluatorImpl.U64_MASK;
+    next = ((next ^ (next >> 27n)) * 0x94d049bb133111ebn) & EvaluatorImpl.U64_MASK;
     next = next ^ (next >> 31n);
-    return next & Evaluator.U63_MASK
+    return next & EvaluatorImpl.U63_MASK
   }
 }
 

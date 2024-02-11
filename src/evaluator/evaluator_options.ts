@@ -20,7 +20,7 @@ export type EvaluatorOptions = {
 
   // outputFormat controls the renderer to be used when rendering the `output.text`
   // property of a module.
-  outputFormat?: "json" | "jsonnet" | "pcf" | "plist" | "properties" | "textproto" | "xml" | "yaml"
+  outputFormat?: "json" | "jsonnet" | "pcf" | "plist" | "properties" | "textproto" | "xml" | "yaml" | string
 
   // allowedModules is the URI patterns that determine which modules can be loaded and evaluated.
   allowedModules?: string[]
@@ -58,7 +58,7 @@ export type EvaluatorOptions = {
   //
   // In contrast, this option only determines how Pkl considers whether files are part of a
   // project.
-  // It is meant to be set by lower level logic in Go that first evaluates the PklProject,
+  // It is meant to be set by lower level logic in TS that first evaluates the PklProject,
   // which then configures EvaluatorOptions accordingly.
   //
   // To emulate the CLI's `--project-dir` flag, create an evaluator with NewProjectEvaluator,

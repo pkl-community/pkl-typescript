@@ -1,5 +1,17 @@
 import * as msgpackr from "msgpackr";
-import {DataSize, DataSizeUnit, Duration, DurationUnit, IntSeq, Pair, Regex} from "../types/pkl";
+import {
+  Any,
+  AnyObject,
+  BaseObject,
+  DataSize,
+  DataSizeUnit,
+  Duration,
+  DurationUnit,
+  Dynamic,
+  IntSeq,
+  Pair,
+  Regex
+} from "../types/pkl";
 
 const
   codeObject = 0x1 as const,
@@ -52,14 +64,17 @@ export class Decoder {
     })
   }
 
-  decode(bytes: Uint8Array): unknown {
+  decode(bytes: Uint8Array): Any {
     return this.decodeAny(this.decoder.decode(bytes))
   }
 
-  decodeCode(code: code, rest: any[]): unknown {
+  decodeCode(code: code, rest: any[]): AnyObject {
     switch (code) {
       case codeObject: {
         const [name, moduleUri, entries] = rest as [string, string, [codeObjectMember, ...any][]];
+        if (name === "Dynamic" && moduleUri === "pkl:base") {
+          return this.decodeDynamic(entries)
+        }
         return this.decodeObject(name, moduleUri, entries)
       }
       case codeMap:
@@ -90,7 +105,7 @@ export class Decoder {
       }
       case codePair: {
         const [first, second] = rest as [any, any]
-        const p: Pair<any, any> = {first, second}
+        const p: Pair<Any, Any> = [this.decodeAny(first), this.decodeAny(second)]
         return p
       }
       case codeIntSeq: {
@@ -117,10 +132,10 @@ export class Decoder {
     }
   }
 
-  decodeObject(name: string, moduleUri: string, entries: [codeObjectMember, ...any][]) {
-    const out: any = [];
+  decodeObject(name: string, moduleUri: string, rest: [codeObjectMember, ...any][]): BaseObject {
+    const out: BaseObject = {}
 
-    for (const entry of entries) {
+    for (const entry of rest) {
       const [code, ...rest] = entry;
       switch (code) {
         case codeObjectMemberProperty: {
@@ -129,28 +144,54 @@ export class Decoder {
           break
         }
         case codeObjectMemberEntry: {
-          const [key, value] = rest as [any, any]
-          out[key] = this.decodeAny(value)
-          break
+          throw new Error("Unexpected object member entry in non-Dynamic object")
         }
         case codeObjectMemberElement: {
-          const [i, value] = rest as [number, any]
-          out[i] = this.decodeAny(value)
-          break
+          throw new Error("Unexpected object member element in non-Dynamic object")
         }
       }
-    }
-
-    if (out.length == 0) {
-      // no members, don't have to return something arrayish
-      return {...out}
     }
 
     return out
   }
 
-  decodeMap(map: Map<any, any>) {
-    const out: Map<any, any> = new Map();
+  decodeDynamic(rest: [codeObjectMember, ...any][]): Dynamic {
+    let properties: Record<string, Any> = {}
+    let entries = new Map<Any, Any>
+    let elements = new Array<Any>
+
+    for (const entry of rest) {
+      const [code, ...rest] = entry;
+      switch (code) {
+        case codeObjectMemberProperty: {
+          const [name, value] = rest as [any, any]
+          if (typeof name !== "string") {
+            throw new Error("object member property keys must be strings")
+          }
+          properties[name] = this.decodeAny(value)
+          break
+        }
+        case codeObjectMemberEntry: {
+          const [key, value] = rest as [any, any]
+          entries.set(this.decodeAny(key), this.decodeAny(value))
+          break
+        }
+        case codeObjectMemberElement: {
+          const [i, value] = rest as [any, any]
+          if (typeof i !== "number") {
+            throw new Error("object member element indices must be numbers")
+          }
+          elements[i] = this.decodeAny(value)
+          break
+        }
+      }
+    }
+
+    return {properties, entries, elements}
+  }
+
+  decodeMap(map: Map<any, any>): Map<Any, Any> {
+    const out = new Map();
 
     for (const [k, v] of map.entries()) {
       out.set(this.decodeAny(k), this.decodeAny(v))
@@ -159,11 +200,11 @@ export class Decoder {
     return out
   }
 
-  decodeList(list: any[]) {
+  decodeList(list: any[]): Any[] {
     return list.map((item) => this.decodeAny(item))
   }
 
-  decodeAny(value: any): unknown {
+  decodeAny(value: any): Any {
     if (value === null) {
       return value
     }
@@ -172,14 +213,10 @@ export class Decoder {
       const [code, ...rest] = value
       return this.decodeCode(code, rest)
     }
-    switch (typeof value) {
-      case "object": {
-        // mapping case
-        return this.decodeMap(value as Map<any, any>)
-      }
-      default: {
-        return value
-      }
+    if (typeof value === "object") {
+      throw new Error(`unexpected object ${value} provided to decodeAny; expected primitive type or Array`)
     }
+    // primitives
+    return value
   }
 }
