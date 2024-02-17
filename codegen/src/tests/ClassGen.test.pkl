@@ -1,0 +1,97 @@
+amends "pkl:test"
+
+import ".../internal/ClassGen.pkl"
+import ".../internal/TypescriptMapping.pkl"
+import "pkl:reflect"
+
+local class Person {
+  name: String
+  hobbies: List<String>
+  hidden talent: String
+}
+
+facts {
+  ["getFields ignores hidden members"] {
+    local fields = ClassGen.getFields(reflect.Class(Person), List())
+    fields.keys == Set("name", "hobbies")
+  }
+}
+
+local class EmptyClass {}
+
+local class OnePropertyClass {
+  name: String
+}
+
+local class MultiPropertyClass {
+  name: String
+  age: Int32
+}
+
+local class WithListingClass {
+  name: String
+  hobbies: Listing<String>
+}
+
+local class WithMappingClass {
+  name: String
+  siblingAges: Mapping<String, Int32>
+}
+
+local class WithNestedMappingClass {
+  name: String
+  siblings: Mapping<String, Mapping<String, Int32>>
+}
+
+local class NestedClass {
+  name: String
+  friend: MultiPropertyClass
+}
+
+local class MappingToNestedClass {
+  name: String
+  familyMembers: Mapping<String, MultiPropertyClass>
+}
+
+local class RecursiveClass {
+  name: String
+  bestFriend: RecursiveClass
+}
+
+local class RecursiveListingClass {
+  name: String
+  friends: Listing<RecursiveListingClass>
+}
+
+local class RecursiveMappingClass {
+  name: String
+  friends: Mapping<String, RecursiveMappingClass>
+}
+
+examples {
+  for (name, clazz in new Mapping<String, Class> {
+    ["Empty class"] = EmptyClass
+    ["One-property class"] = OnePropertyClass    
+    ["Multi-property class"] = MultiPropertyClass
+    ["Class with a listing proprety"] = WithListingClass
+    ["Class with a mapping property"] = WithMappingClass
+    ["Class with a nested mapping property"] = WithNestedMappingClass
+
+    // TODO(Jason): Below examples are hitting `Cannot generate type XxxxClass as TypeScript` error from typegen.pkl
+    //
+    // ["Class with a nested class property"] = NestedClass
+    // ["Class with a mapping property to another class"] = MappingToNestedClass
+    // ["Basic recursive class"] = RecursiveClass
+    // ["Class with a recursive listing of itself"] = RecursiveListingClass
+    // ["Class with a recursive mapping of itself"] = RecursiveMappingClass
+  }) {
+    [name] {
+        ((ClassGen) {
+        mapping = (TypescriptMapping.Class) {
+          source = reflect.Class(clazz)
+          typescriptModule = "@myorg/myproj/appconfig"
+        }
+      }).contents
+    }
+  }
+}

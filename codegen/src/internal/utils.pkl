@@ -41,6 +41,20 @@ function toTypescriptName(source: reflect.Declaration): String =
     )
       normalizeName(_name)
 
+function toTypescriptPropertyName(source: reflect.Declaration): String =
+  source
+    .annotations
+    .findOrNull((it) -> it.getClass().toString() == "pkl.typescript.typescript#Name")
+    ?.value
+  ??
+    // edge case: if the source is the module's companion class, use the module name and not the class name.
+    let (_name =
+      if (source is reflect.Class && source.enclosingDeclaration.moduleClass == source)
+        source.enclosingDeclaration.name.split(".").last
+      else source.name
+    )
+      camelCase(_name)
+
 /// Sourced from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#keywords
 keywords: List<String> = List(
   // Reserved words

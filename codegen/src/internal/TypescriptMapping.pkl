@@ -5,7 +5,7 @@ import "Type.pkl"
 import "pkl:reflect"
 import "utils.pkl"
 
-/// The go package path, e.g. `github.com/myorg/myproj/appconfig`
+/// The TypeScript module path, e.g. `@myorg/myproj/appconfig`
 typescriptModule: String
 
 /// The short name of the go package, e.g. `appconfig`
@@ -65,47 +65,21 @@ class Class extends TypescriptMapping {
 
   clazz: reflect.Class = self.source as reflect.Class
 
-  names = List(interface?.name, struct?.name).filterNonNull() as List<String>
+  names = List(interface?.name).filterNonNull() as List<String>
 
   type = if (interface != null) interface.type else struct.type
 
   name = utils.toTypescriptName(clazz)
 
-  // TODO(JASON): WHAT DO ABOUT THIS
-
-  // interface: Interface? =
-  //   if (
-  //     clazz.modifiers.contains("abstract")
-  //     || clazz.modifiers.contains("open")
-  //     // inherits from another class
-  //     || clazz.superclass.reflectee != Typed && clazz.superclass.reflectee != Module
-  //   )
-  //     new Interface {
-  //       name = self.name
-  //       type = new Type.Declared {
-  //         typeName = self.name
-  //         importPath = self.goPackage
-  //         package = self.goPackageShort
-  //       }
-  //     }
-  //   else null
-
-  // struct: Struct? =
-  //   if (clazz.modifiers.contains("abstract")) null
-  //   else
-  //     let (structName =  if (interface == null) name else "\(name)Impl")
-  //       new Struct {
-  //         name = structName
-  //         clazz = self.clazz
-  //         type = new Type.Pointer {
-  //           elem = new Type.Declared {
-  //             typeName = structName
-  //             importPath = self.goPackage
-  //             package = self.goPackageShort
-  //           }
-  //         }
-  //       }
-
+  interface: Interface? =
+    new Interface {
+      name = self.name
+      type = new Type.Declared {
+        typeName = self.name
+        importPath = self.typescriptModule
+        package = self.typescriptModuleShort
+      }
+    }
 }
 
 class EnumMember {
@@ -113,13 +87,7 @@ class EnumMember {
   typescriptName: String
 }
 
-// class Interface {
-//   name: String
-//   type: Type
-// }
-
-// class Struct {
-//   name: String
-//   clazz: reflect.Class
-//   type: Type
-// }
+class Interface {
+  name: String
+  type: Type
+}

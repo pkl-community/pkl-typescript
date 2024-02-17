@@ -55,8 +55,8 @@ function generateDeclaredType(
       generateMapping(type, enclosing, seenMappings)
     else if (reflectee == Set)
       generateSet(type, enclosing, seenMappings)
-     else if (reflectee == Pair)
-       generatePair(type, enclosing, seenMappings)
+    else if (reflectee == Pair)
+      generatePair(type, enclosing, seenMappings)
     else throw("Cannot generate type \(type.referent.name) as TypeScript.")
 
 function generateListing(
