@@ -1,0 +1,21 @@
+// Settings used to configure code generation.
+@typescript.Module { name = "pkl_gen_typescript" }
+@typescript.Name { value = "GeneratorSettings" }
+module pkl.typescript.GeneratorSettings
+
+import "pkl:reflect"
+import "typescript.pkl"
+
+/// The output path to write generated files into.
+///
+/// Defaults to `.out`. Relative paths are resolved against the enclosing directory.
+outputDirectory: String?
+
+/// If true, evaluates the Pkl modules to check that they could be generated,
+/// and prints the filenames that would be created, but skips writing any files.
+dryRun: Boolean?
+
+/// The Generator.pkl script to use for code generation.
+///
+/// This is an internal setting that's meant for development purposes.
+generatorScriptPath: String?

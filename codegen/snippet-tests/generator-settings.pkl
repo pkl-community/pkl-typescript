@@ -1,0 +1,3 @@
+amends "../src/GeneratorSettings.pkl"
+
+outputDirectory = "codegen/snippet-tests/output"

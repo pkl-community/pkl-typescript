@@ -15,27 +15,23 @@ classInfo: TypescriptMapping.Class = mapping as TypescriptMapping.Class
 contents = new Listing {
   utils.renderHeaderComment(clazz.enclosingDeclaration)
   when (!imports.isEmpty) {
-    ""
     utils.renderImports(imports)
+    ""
   }
   when (interface != null) {
     interface
   }
   when (isModule && !isAbstract) {
-    ""
-    // TODO(Jason): Finish implementing using the Evaulator API
     """
-    // LoadFromPath loads the pkl module at the given path and evaluates it into a \(classInfo.name)
-    function loadFromPath(path: string): \(classInfo.type.render(classInfo.typescriptModule)) {
-      const evaluator = pklEval.newEvaluator(, pklEval.preconfiguredOptions)
-      return load(evaluator, pkl.FileSource(path))
-    }
 
-    // TODO(Jason): Inline this above?
-    // Load loads the pkl module at the given source and evaluates it with the given evaluator into a \(classInfo.name)
-    func load(evaluator: pklEval.Evaluator, source: pklEval.ModuleSource): \(classInfo.type.render(classInfo.typescriptModule)) {
-      return evaluator.EvaluateModule(source)
-    }
+    // LoadFromPath loads the pkl module at the given path and evaluates it into a \(classInfo.name)
+    export const loadFromPath = async (path: string): Promise<\(classInfo.type.render(classInfo.typescriptModule))> => {
+      const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);
+      return load(evaluator, pklTypescript.FileSource(path));
+    };
+
+    export const load = (evaluator: pklTypescript.Evaluator, source: pklTypescript.ModuleSource): Promise<\(classInfo.type.render(classInfo.typescriptModule))> =>
+      evaluator.evaluateModule(source) as Promise<\(classInfo.type.render(classInfo.typescriptModule))>;
     """
   }
   ""
@@ -54,7 +50,10 @@ local imports =
     .flatMap((f) -> f.type.imports)
     .filter((i) -> i != classInfo.typescriptModule).distinct
   + (if (superClass != null && superClass.typescriptModule != classInfo.typescriptModule) List(superClass.typescriptModule) else List())
-  + (if (isModule && !isAbstract) List("github.com/apple/pkl-typescript/pkl-types") else List())
+  + (if (isModule && !isAbstract)
+    // List("../src")
+    List("@pkl-community/pkl-typescript")
+    else List())
 
 local isModule: Boolean = clazz.enclosingDeclaration.moduleClass == clazz
 
@@ -135,7 +134,7 @@ local interface: String = new Listing {
     utils.renderDocComment(clazz.docComment!!, "")
   }
   (
-    "interface \(classInfo.interface.name) " +
+    "export interface \(classInfo.interface.name) " +
     (if (superClass != null)
       superClass.type.render(classInfo.typescriptPackage)
       else "")

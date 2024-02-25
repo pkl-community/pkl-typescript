@@ -144,7 +144,10 @@ keywords: List<String> = List(
   "set"
 )
 
-function isValidTypescriptName(it: String) =
+/// As per: https://stackoverflow.com/questions/1661197/what-characters-are-valid-for-javascript-variable-names/9337047#9337047
+/// > An identifier must start with $, _, or any character in the Unicode categories “Uppercase letter (Lu)”, “Lowercase letter (Ll)”, “Titlecase letter (Lt)”, “Modifier letter (Lm)”, “Other letter (Lo)”, or “Letter number (Nl)”.
+/// > The rest of the string can contain the same characters, plus any U+200C zero width non-joiner characters, U+200D zero width joiner characters, and characters in the Unicode categories “Non-spacing mark (Mn)”, “Spacing combining mark (Mc)”, “Decimal digit number (Nd)”, or “Connector punctuation (Pc)”.
+isValidTypescriptName = (it: String) ->
   if (keywords.contains(it))
     throw("""
       Name `\(it)` is not valid because it clashes with a JavaScript/TypeScript keyword`.
