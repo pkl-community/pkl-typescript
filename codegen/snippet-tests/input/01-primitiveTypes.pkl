@@ -1,0 +1,9 @@
+str: String
+int: Int
+int8: Int8
+uint: UInt
+float: Float
+bool: Boolean
+nullType: Null
+anyType: Any
+
