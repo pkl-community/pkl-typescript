@@ -17,6 +17,13 @@ facts {
     utils.normalizeName("Go111") == "Go111"
     utils.normalizeName("snake_case") == "SnakeCase"
   }
+  ["isValidTypescriptName"] {
+    utils.isValidTypescriptName("hello") == true
+    utils.isValidTypescriptName("123") == false
+    utils.isValidTypescriptName("+invalid") == false
+    module.catch(() -> utils.isValidTypescriptName("await")).startsWith("Name")
+    module.catch(() -> utils.isValidTypescriptName("as")).startsWith("Name")
+  }
   ["renderImports"] {
     utils.renderImports(List(
       "fs"

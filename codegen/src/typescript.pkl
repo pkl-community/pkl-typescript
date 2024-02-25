@@ -1,0 +1,41 @@
+@Module { name = "pkl_gen_typescript" }
+module pkl.typescript.typescript
+
+import "internal/utils.pkl"
+
+/// A name in TypeScript/JavaScript; i.e., an identifier.
+typealias TypeScriptName = String(utils.isValidTypescriptName)
+
+/// Metadata for the corresponding TypeScript module for the annotated Pkl module(s).
+///
+/// This flag
+///
+/// Example:
+///
+/// ```
+/// @typescript.Module { name = "MyLibrary" }
+/// module myteam.myproj.MyLibrary
+///
+/// import "package://pkg.pkl-lang.org/pkl-typescript/pkl.typescript@<VERSION>#/typescript.pkl"
+/// ```
+class Module extends Annotation {
+    /// The full name of the TypeScript module
+    name: TypeScriptName
+}
+
+/// The name for the annotated member when generated to TypeScript.
+///
+/// This may be used to annotate modules, classes, typealiases, and properties.
+///
+/// If the annotation is applied to a module, it determines the name of the namespace (the `enum` that holds all the
+/// module's members).
+///
+/// Examples:
+///
+/// ```
+/// @typescript.Name { value = "ThePerson" }
+/// class Person
+/// ```
+class Name extends Annotation {
+    value: TypeScriptName
+}

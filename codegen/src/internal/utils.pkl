@@ -12,7 +12,7 @@ local escaper = (c: Char) ->
 ///
 /// Renders raw string literals if the incoming string is multiline, or contains quotes.
 ///
-/// Only newlines, double quotes and backslash literals need to be escaped in Go strings.
+/// Only newlines, double quotes and backslash literals need to be escaped in TypeScript strings.
 function toTypescriptString(str: String): String =
   if ((str.contains("\n") || str.contains("\"")) && !str.contains("`")) "`" + str + "`"
   else "\"" + str.chars.map(escaper).join("") + "\""
@@ -143,6 +143,13 @@ keywords: List<String> = List(
   "of",
   "set"
 )
+
+function isValidTypescriptName(it: String) =
+  if (keywords.contains(it))
+    throw("""
+      Name `\(it)` is not valid because it clashes with a JavaScript/TypeScript keyword`.
+      """)
+  else it.matches(Regex(#"(?u)\p{L}[\p{L}\d_]+"#))
 
 function renderDocComment(docComment: String, indent: String) =
   docComment
