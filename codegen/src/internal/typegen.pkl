@@ -1,0 +1,155 @@
+/// Utilities for generating TypeScript types from Pkl.
+module pkl.typescript.internal.typegen
+
+import "pkl:reflect"
+import "Type.pkl"
+import "TypescriptMapping.pkl"
+
+function generateType(
+  type: reflect.Type,
+  enclosing: reflect.TypeDeclaration,
+  seenMappings: List<TypescriptMapping>
+): Type =
+  if (type is reflect.DeclaredType)
+    generateDeclaredType(type, enclosing, seenMappings)
+  else if (type is reflect.ModuleType)
+    let (moduleClass = enclosing.enclosingDeclaration.moduleClass)
+      generateType(reflect.DeclaredType(moduleClass), moduleClass, seenMappings)
+  else if (type is reflect.UnionType) generateUnionType(type, seenMappings)
+  else if (type is reflect.NullableType)
+    let (_elem = generateType(type.member, enclosing, seenMappings))
+      new Type.Nullable { elem = _elem }
+  else if (type is reflect.UnknownType) anyType
+  else if (type is reflect.NothingType) new Type.Declared { typeName = "never" }
+  else if (type is reflect.StringLiteralType) new Type.Declared { typeName = "string" }
+  else throw("Unsure how to generate this type: \(type)")
+
+function generateUnionType(
+  type: reflect.UnionType,
+  seenMappings: List<TypescriptMapping>
+): Type =
+  let (mappedType = seenMappings.findOrNull((c) -> c.source == type))
+    if (mappedType != null)
+      mappedType.type
+    else if (type.members.every((it) -> it is reflect.StringLiteralType || it == reflect.stringType))
+      new Type.Declared { typeName = "string" }
+    else
+      anyType
+
+function generateDeclaredType(
+  type: reflect.DeclaredType,
+  enclosing: reflect.TypeDeclaration,
+  seenMappings: List<TypescriptMapping>
+): Type =
+  let (referent = type.referent)
+  let (reflectee = type.referent.reflectee)
+  let (mapped = seenMappings.findOrNull((it) -> it.source == referent))
+    if (mapped != null) mapped.type
+    else if (mappedTypes.containsKey(reflectee))
+      mappedTypes[reflectee]
+    else if (referent is reflect.TypeAlias)
+      generateType(referent.referent, enclosing, seenMappings)
+    else if (reflectee == List || reflectee == Listing)
+      generateListing(type, enclosing, seenMappings)
+    else if (reflectee == Map || reflectee == Mapping)
+      generateMapping(type, enclosing, seenMappings)
+    else if (reflectee == Set)
+      generateSet(type, enclosing, seenMappings)
+    else if (reflectee == Pair)
+      generatePair(type, enclosing, seenMappings)
+    else throw("Cannot generate type \(type.referent.name) as TypeScript.")
+
+function generateListing(
+  type: reflect.DeclaredType,
+  enclosing: reflect.TypeDeclaration,
+  seenMappings: List<TypescriptMapping>
+): Type =
+  let (typeArg = type.typeArguments.getOrNull(0))
+    new Type.Array {
+      elem =
+        if (typeArg == null) anyType
+        else generateType(typeArg, enclosing, seenMappings)
+    }
+
+function generateMapping(
+  type: reflect.DeclaredType,
+  enclosing: reflect.TypeDeclaration,
+  seenMappings: List<TypescriptMapping>
+): Type =
+  let (typeArgKey = type.typeArguments.getOrNull(0))
+  let (typeArgValue = type.typeArguments.getOrNull(1))
+    new Type.Map {
+      key =
+        if (typeArgKey == null) anyType
+        else generateType(typeArgKey, enclosing, seenMappings)
+      elem =
+        if (typeArgValue == null) anyType
+        else generateType(typeArgValue, enclosing, seenMappings)
+    }
+
+function generateSet(
+  type: reflect.DeclaredType,
+  enclosing: reflect.TypeDeclaration,
+  seenMappings: List<TypescriptMapping>
+): Type =
+  let (typeArg = type.typeArguments.getOrNull(0))
+    new Type.Set {
+      elem =
+        if (typeArg == null) anyType
+        else generateType(typeArg, enclosing, seenMappings)
+    }
+
+function generatePair(
+  type: reflect.DeclaredType,
+  enclosing: reflect.TypeDeclaration,
+  seenMappings: List<TypescriptMapping>
+): Type =
+  new Type.Tuple {
+    elems = type.typeArguments.map((t) -> generateType(t, enclosing, seenMappings))
+  }
+
+local function builtInType(typ: String): Type.Declared = new { typeName = typ }
+
+local anyType: Type.Declared = builtInType("any")
+
+mappedTypes: Mapping<Class|TypeAlias, Type> = new {
+  [Int] = new Type.Declared { typeName = "number" }
+  [Int8] = new Type.Declared { typeName = "number" }
+  [Int16] = new Type.Declared { typeName = "number" }
+  [Int32] = new Type.Declared { typeName = "number" }
+  [UInt] = new Type.Declared { typeName = "number" }
+  [UInt8] = new Type.Declared { typeName = "number" }
+  [UInt16] = new Type.Declared { typeName = "number" }
+  [UInt32] = new Type.Declared { typeName = "number" }
+  [Number] = new Type.Declared { typeName = "number" }
+  [Float] = new Type.Declared { typeName = "number" }
+  [String] = new Type.Declared { typeName = "string" }
+  [Boolean] = new Type.Declared { typeName = "boolean" }
+  [Null] = new Type.Declared { typeName = "null" }
+  [Any] = anyType
+  [Duration] = new Type.Declared {
+    `module` = "pkl-types"
+    typeName = "Duration"
+    importPath = "@pkl-community/pkl-types"
+  }
+  [DurationUnit] = new Type.Declared {
+    `module` = "pkl-types"
+    typeName = "DurationUnit"
+    importPath = "@pkl-community/pkl-types"
+  }
+  [Dynamic] = new Type.Declared {
+    `module` = "pkl-types"
+    typeName = "Dynamic"
+    importPath = "@pkl-community/pkl-types"
+  }
+  [DataSize] = new Type.Declared {
+    `module` = "pkl-types"
+    typeName = "DataSize"
+    importPath = "@pkl-community/pkl-types"
+  }
+  [DataSizeUnit] = new Type.Declared {
+    `module` = "pkl-types"
+    typeName = "DataSizeUnit"
+    importPath = "@pkl-community/pkl-types"
+  }
+}

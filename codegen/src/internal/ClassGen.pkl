@@ -1,0 +1,188 @@
+module pkl.typescript.internal.ClassGen
+
+extends "Gen.pkl"
+
+import "pkl:reflect"
+import "TypescriptMapping.pkl"
+import "utils.pkl"
+import "Type.pkl"
+import "typegen.pkl"
+
+clazz: reflect.Class = mapping.source as reflect.Class
+
+classInfo: TypescriptMapping.Class = mapping as TypescriptMapping.Class
+
+contents = new Listing {
+  utils.renderHeaderComment(clazz.enclosingDeclaration)
+  when (!imports.isEmpty) {
+    ""
+    utils.renderImports(imports)
+  }
+  when (interface != null) {
+    interface
+  }
+  when (isModule && !isAbstract) {
+    ""
+    // TODO(Jason): Finish implementing using the Evaulator API
+    """
+    // LoadFromPath loads the pkl module at the given path and evaluates it into a \(classInfo.name)
+    function loadFromPath(path: string): \(classInfo.type.render(classInfo.typescriptModule)) {
+      const evaluator = pklEval.newEvaluator(, pklEval.preconfiguredOptions)
+      return load(evaluator, pkl.FileSource(path))
+    }
+
+    // TODO(Jason): Inline this above?
+    // Load loads the pkl module at the given source and evaluates it with the given evaluator into a \(classInfo.name)
+    func load(evaluator: pklEval.Evaluator, source: pklEval.ModuleSource): \(classInfo.type.render(classInfo.typescriptModule)) {
+      return evaluator.EvaluateModule(source)
+    }
+    """
+  }
+  ""
+}.join("\n")
+
+local isSuperOpen: Boolean = clazz.superclass.modifiers.contains("open")
+
+local isAbstract: Boolean = clazz.modifiers.contains("abstract")
+
+local superClass: TypescriptMapping.Class? = mappings.findOrNull((c) -> c is TypescriptMapping.Class && c.clazz == clazz.superclass) as TypescriptMapping.Class?
+
+local fields: Map<String, TypescriptInterfaceProperty> = getFields(clazz, mappings)
+
+local imports =
+  fields.values
+    .flatMap((f) -> f.type.imports)
+    .filter((i) -> i != classInfo.typescriptModule).distinct
+  + (if (superClass != null && superClass.typescriptModule != classInfo.typescriptModule) List(superClass.typescriptModule) else List())
+  + (if (isModule && !isAbstract) List("github.com/apple/pkl-typescript/pkl-types") else List())
+
+local isModule: Boolean = clazz.enclosingDeclaration.moduleClass == clazz
+
+local function getAllProperties(clazz: reflect.Class?): List<reflect.Property> =
+  if (clazz == null) List()
+  else if (doesNotInherit(clazz)) clazz.properties.values
+  else clazz.properties.values + getAllProperties(clazz.superclass!!)
+
+local function isSameType(typeA: reflect.Type, typeB: reflect.Type) =
+  if (typeA is reflect.DeclaredType && typeB is reflect.DeclaredType)
+    typeA.referent.reflectee == typeB.referent.reflectee
+  else if (typeA is reflect.NullableType && typeB is reflect.NullableType)
+    isSameType(typeA.member, typeB.member)
+  else if (typeA is reflect.NothingType && typeB is reflect.NothingType)
+    true
+  else if (typeA is reflect.UnknownType && typeB is reflect.UnknownType)
+    true
+  else if (typeA is reflect.StringLiteralType && typeB is reflect.StringLiteralType)
+    typeA.value == typeB.value
+  // union types turn into Go's `any`, so we can say that this is always fine.
+  // TODO(Jason): this was true in Go, what does it mean here?
+  // TODO(Jason): need to figure out how to deep-check union types structures??
+  else if (typeA is reflect.UnionType && typeB is reflect.UnionType)
+    true
+  // remaining types: `FunctionType`, `TypeParameter`, `ModuleType`.
+  // we can actually check if `ModuleType` refers to the same type by checking if the enclosing declaration is the same,
+  // but we will pretend it is always false for now.
+  else false
+
+// visible for testing
+function getFields(
+  clazz: reflect.Class,
+  mappings: List<TypescriptMapping>
+): Map<String, TypescriptInterfaceProperty> =
+  let (isSuperOpen: Boolean = clazz.superclass.modifiers.contains("open"))
+  // add the properties of the superclass as fields unless it is an open class (because its struct gets embedded),
+  // or the class does not inherit.
+  let (superFields: Map<String, TypescriptInterfaceProperty> =
+    if (doesNotInherit(clazz) || isSuperOpen) Map()
+    else getFields(clazz.superclass!!, mappings)
+  )
+  let (superProperties = getAllProperties(clazz.superclass))
+    clazz.properties
+      .filter((propName, prop: reflect.Property) ->
+        let (superProp = superProperties.findOrNull((it) -> it.name == prop.name))
+          // don't render hidden members
+          if (prop.modifiers.contains("hidden")) false
+          // Okay if there is no property override, or if the super property has the same type.
+          else if (superProp == null || isSameType(superProp.type, prop.type)) true
+          // Okay if the property is overridden but does not define a type, but don't render as its own field.
+          // E.g. `class Foo extends Bar { bar = "mybar" }`
+          else if (prop.type is reflect.UnknownType) !isSuperOpen
+          // Otherwise, the property's type has been overridden and this is impossible to
+          // represent in Go.
+          // TODO(Jason): I think this _can_ be handled by how TypeScript does interface inheritance.
+          else throw("""
+              Illegal: Class `\(clazz.reflectee)` overrides property `\(propName)`. This is not supported when generating Go.
+
+              \(prop.location.displayUri)
+              """)
+      )
+      .mapValues((_, prop: reflect.Property) ->
+        new TypescriptInterfaceProperty {
+          isInherited = false
+          type = typegen.generateType(prop.type, clazz, mappings)
+          docComment = prop.docComment
+          name = utils.toTypescriptPropertyName(prop)
+          property = prop
+        }
+      ) + superFields.mapValues((_, field) -> (field) { isInherited = true })
+
+local function doesNotInherit(clazz: reflect.Class?) =
+  clazz.superclass == null || clazz.superclass.reflectee == Module || clazz.superclass.reflectee == Typed
+
+// local methodsToGenerate = fields.filter((_, field) -> !field.isInherited)
+local interface: String = new Listing {
+  when (clazz.docComment != null) {
+    utils.renderDocComment(clazz.docComment!!, "")
+  }
+  (
+    "interface \(classInfo.interface.name) " +
+    (if (superClass != null)
+      superClass.type.render(classInfo.typescriptPackage)
+      else "")
+    + "{"
+  )
+
+  when (isSuperOpen) {
+    // TODO(Jason): what was this for?
+    // "\t" + superClass!!.struct.type.render(classInfo.goPackage)
+    when (!properties.isEmpty) {
+      ""
+    }
+  }
+  for (pklPropertyName, field in fields) {
+    when (pklPropertyName != fields.keys.first) {
+      ""
+    }
+    when (field.docComment != null) {
+      utils.renderDocComment(field.docComment!!, "  ")
+    }
+    renderInterfaceProperty(pklPropertyName, field)
+  }
+  "}"
+}
+  .join("\n")
+
+local function renderInterfaceProperty(pklPropertyName: String, field: TypescriptInterfaceProperty): String =
+  new Listing {
+    "  "
+    field.name
+    ": "
+    field.type.render(classInfo.typescriptModule)
+  }.join("")
+
+local class TypescriptInterfaceProperty {
+  /// Is this field inherited from a parent?
+  isInherited: Boolean
+
+  /// The name of the field
+  name: String
+
+  /// The Go type associated with this field
+  type: Type
+
+  /// The doc comments on the field
+  docComment: String?
+
+  /// The Pkl property behind the field
+  property: reflect.Property
+}

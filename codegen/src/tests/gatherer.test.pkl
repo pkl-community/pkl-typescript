@@ -1,0 +1,25 @@
+// As with gatherer.pkl, this is 100% copy-pasted from pkl-go and pkl-swift.
+amends "pkl:test"
+
+import "pkl:reflect"
+import "gatherer-fixtures/types.pkl"
+import "gatherer-fixtures/types2.pkl"
+import "gatherer-fixtures/types4.pkl"
+import "../internal/gatherer.pkl"
+
+// it's important that these classes are defined in another module because they gather the type
+// declarations of their enclosing module.
+facts {
+  ["gather type declarations"] {
+    gatherer.gatherTypeDeclarations(reflect.Class(types.Bug), List()).map((c) -> c.name)
+      == List("Bug", "Person", "Bike", "ModuleClass", "Being", "Cyclic", "BugKind", "SymbolKind")
+  }
+  ["gather type declarations - listing arguments"] {
+    gatherer.gatherTypeDeclarations(reflect.Class(types2.Person), List()).map((c) -> c.name)
+      == List("Person", "Bike", "ModuleClass", "ModuleClass")
+  }
+  ["gather type declarations - type params with unions"] {
+    gatherer.gatherTypeDeclarations(reflect.Class(types4.Foo), List()).map((c) -> c.name)
+      == List("Foo", "ModuleClass")
+  }
+}

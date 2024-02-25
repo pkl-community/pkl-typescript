@@ -1,0 +1,93 @@
+abstract module pkl.typescript.internal.TypescriptMapping
+
+import "TypescriptMapping.pkl"
+import "Type.pkl"
+import "pkl:reflect"
+import "utils.pkl"
+
+/// The TypeScript module path, e.g. `@myorg/myproj/appconfig`
+typescriptModule: String?
+
+/// The short name of the go package, e.g. `appconfig`
+typescriptModuleShort: String? = if (typescriptModule != null) utils.normalizeName(typescriptModule.split("/").last) else null
+
+/// The exposed simple name of this type (either the enum's name or the struct or interface name).
+name: String
+
+/// All names exposed by this mapping
+names: List<String>
+
+seenMappings: List<TypescriptMapping>
+
+/// The source for this mapping
+source: reflect.TypeDeclaration
+
+/// The exposed Go type.
+type: Type
+
+/// The set of names already seen prior to creating mappings for this module.
+existingNames: List<String> = seenMappings.flatMap((it) ->
+  if (it.typescriptModule == module.typescriptModule) it.names
+  else List()
+)
+
+class Enum extends TypescriptMapping {
+  local self = this
+
+  local union: reflect.UnionType = alias.referent as reflect.UnionType
+
+  alias: reflect.TypeAlias = self.source as reflect.TypeAlias
+
+  name = utils.toTypescriptName(self.source)
+
+  names = members.map((it) -> it.typescriptName).add(name)
+
+  type = new Type.Declared {
+    typeName = name
+    importPath = self.typescriptModule
+    `module` = self.typescriptModuleShort
+  }
+
+  /// The member constituents of this enum
+  members: List<EnumMember> =
+    union.members
+      .filter((it) -> !(it is reflect.NothingType))
+      .fold(List(), (acc: List<EnumMember>, mem) ->
+        acc.add(new EnumMember {
+          pklName = (mem as reflect.StringLiteralType).value
+          typescriptModule = utils.normalizeEnumName(pklName)
+        })
+      )
+}
+
+class Class extends TypescriptMapping {
+  local self = this
+
+  clazz: reflect.Class = self.source as reflect.Class
+
+  names = List(interface?.name).filterNonNull() as List<String>
+
+  type = if (interface != null) interface.type else struct.type
+
+  name = utils.toTypescriptName(clazz)
+
+  interface: Interface? =
+    new Interface {
+      name = self.name
+      type = new Type.Declared {
+        typeName = self.name
+        importPath = self.typescriptModule
+        `module` = self.typescriptModuleShort
+      }
+    }
+}
+
+class EnumMember {
+  pklName: String
+  typescriptName: String
+}
+
+class Interface {
+  name: String
+  type: Type
+}

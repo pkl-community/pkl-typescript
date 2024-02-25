@@ -1,0 +1,97 @@
+amends "pkl:test"
+
+import "pkl:reflect"
+
+import "../internal/typegen.pkl"
+
+local class Maps {
+  res1: Map<String, String>
+  res2: Map<String, Map<String, String>>
+  res3: Mapping<String, String>
+  res4: Mapping<String, Listing<Boolean>>
+  res5: Mapping
+  res6: Mapping
+}
+
+local reflectedMaps = reflect.Class(Maps)
+
+local class Arrays {
+  res1: List<String>
+  res2: List<Map<String, String>>
+  res3: Listing<String>
+  res4: Listing<Mapping<String, String>>
+  res5: List
+  res6: Listing
+}
+
+local reflectedArrays = reflect.Class(Arrays)
+
+local class Nullables {
+  res1: String?
+  res2: Boolean?
+  res3: Listing<String?>
+  res4: Listing<String>?
+  res5: Listing<String?>?
+  res6: Mapping<String?, String>
+  res7: Mapping<String, String>?
+  res8: Mapping<String?, String?>?
+}
+
+local reflectedNullables = reflect.Class(Nullables)
+
+local class Pairs {
+  res1: Pair<String, String>
+  res2: Pair<String, String?>
+}
+
+local reflectedPairs = reflect.Class(Pairs)
+
+local mod = reflect.Module(module).moduleClass
+
+local function generateType(typ: reflect.Type) = typegen.generateType(typ, mod, List()).render("")
+
+facts {
+  ["basic types"] {
+    generateType(reflect.stringType) == "string"
+    generateType(reflect.booleanType) == "boolean"
+    generateType(reflect.int8Type) == "number"
+    generateType(reflect.int16Type) == "number"
+    generateType(reflect.int32Type) == "number"
+    generateType(reflect.intType) == "number"
+    generateType(reflect.floatType) == "number"
+    generateType(reflect.uint8Type) == "number"
+    generateType(reflect.uint16Type) == "number"
+    generateType(reflect.uint32Type) == "number"
+    generateType(reflect.uintType) == "number"
+    generateType(reflect.anyType) == "any"
+    generateType(reflect.dynamicType) == "PklTypes.Dynamic"
+    generateType(reflect.dataSizeType) == "PklTypes.DataSize"
+    generateType(reflect.durationType) == "PklTypes.Duration"
+  }
+  ["maps"] {
+    generateType(reflectedMaps.properties["res1"].type) == "Map<string, string>"
+    generateType(reflectedMaps.properties["res2"].type) == "Map<string, Map<string, string>>"
+    generateType(reflectedMaps.properties["res3"].type) == "Map<string, string>"
+    generateType(reflectedMaps.properties["res4"].type) == "Map<string, Array<boolean>>"
+  }
+  ["arrays"] {
+    generateType(reflectedArrays.properties["res1"].type) == "Array<string>"
+    generateType(reflectedArrays.properties["res2"].type) == "Array<Map<string, string>>"
+    generateType(reflectedArrays.properties["res3"].type) == "Array<string>"
+    generateType(reflectedArrays.properties["res4"].type) == "Array<Map<string, string>>"
+  }
+  ["nullables"] {
+    generateType(reflectedNullables.properties["res1"].type) == "string|null"
+    generateType(reflectedNullables.properties["res2"].type) == "boolean|null"
+    generateType(reflectedNullables.properties["res3"].type) == "Array<string|null>"
+    generateType(reflectedNullables.properties["res4"].type) == "Array<string>|null"
+    generateType(reflectedNullables.properties["res5"].type) == "Array<string|null>|null"
+    generateType(reflectedNullables.properties["res6"].type) == "Map<string|null, string>"
+    generateType(reflectedNullables.properties["res7"].type) == "Map<string, string>|null"
+    generateType(reflectedNullables.properties["res8"].type) == "Map<string|null, string|null>|null"
+  }
+  ["pairs"] {
+    generateType(reflectedPairs.properties["res1"].type) == "readonly [string, string]"
+    generateType(reflectedPairs.properties["res2"].type) == "readonly [string, string|null]"
+  }
+}

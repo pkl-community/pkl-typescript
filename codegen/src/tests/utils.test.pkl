@@ -1,0 +1,44 @@
+amends "pkl:test"
+
+import "../internal/utils.pkl"
+
+facts {
+  ["camelCase"] {
+    utils.camelCase("hello") == "hello"
+    utils.camelCase("hello space") == "helloSpace"
+    utils.camelCase("hello-hyphen") == "helloHyphen"
+    utils.camelCase("hello_underscore") == "helloUnderscore"
+  }
+  ["normalizeName"] {
+    utils.normalizeName("foo") == "Foo"
+    utils.normalizeName("foo foo") == "FooFoo"
+    utils.normalizeName("1 foo") == "N1Foo"
+    utils.normalizeName("bar ` $$ 你好 baz") == "Bar你好Baz"
+    utils.normalizeName("Go111") == "Go111"
+    utils.normalizeName("snake_case") == "SnakeCase"
+  }
+  ["isValidTypescriptName"] {
+    utils.isValidTypescriptName("hello") == true
+    utils.isValidTypescriptName("123") == false
+    utils.isValidTypescriptName("+invalid") == false
+    module.catch(() -> utils.isValidTypescriptName("await")).startsWith("Name")
+    module.catch(() -> utils.isValidTypescriptName("as")).startsWith("Name")
+  }
+  ["renderImports"] {
+    utils.renderImports(List(
+      "fs"
+    )) == "import * as fs from \"fs\""
+
+    utils.renderImports(List(
+      "fs",
+      "child_process"
+    )) == """
+      import * as fs from "fs"
+      import * as childProcess from "child_process"
+      """
+
+    utils.renderImports(List(
+      "copy-to-clipboard"
+    )) == "import * as copyToClipboard from \"copy-to-clipboard\""
+  }
+}

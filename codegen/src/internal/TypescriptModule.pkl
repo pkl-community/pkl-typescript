@@ -1,0 +1,71 @@
+import "pkl:reflect"
+import "TypescriptMapping.pkl"
+import "Gen.pkl"
+import "ClassGen.pkl"
+
+`module`: reflect.Module
+
+/// All mappings
+mappings: List<TypescriptMapping>
+
+typescriptModule: String?
+
+local moduleMappings: List<TypescriptMapping> =
+  mappings.filter((it) -> it.typescriptModule == typescriptModule)
+
+local typescriptModuleShort = moduleMappings[0].typescriptModuleShort
+
+local function describeLocation(src: reflect.TypeDeclaration) =
+  let (memberType =
+    if (src is reflect.Class && src.enclosingDeclaration.moduleClass == src) "module"
+    else if (src is reflect.Class) "class"
+    else "typealias"
+  )
+    "* \(memberType) `\(src.reflectee)` (\(src.location.displayUri))"
+
+
+local function hasUniqueNames(): Boolean =
+  let (names = moduleMappings.map((it) -> it.name))
+    if (names.isDistinct) true
+    else
+      let (duplicateNames = moduleMappings.filter((it) -> moduleMappings.count((m) -> m.name == it.name) > 1))
+      let (locations = duplicateNames.map((it) -> describeLocation(it.source)).join("\n"))
+        throw("""
+          Conflict: multiple Pkl declarations compute to TypeScript name `\(duplicateNames.first.name)`.
+
+          To resolve this conflict, add a `@typescript.Name` annotation to any of the following declarations:
+
+          \(locations)
+
+          For example:
+
+          ```
+          @typescript.Name { value = "CrabCakes" }
+          class Crab_Cakes
+          ```
+          """)
+
+local generated: List<Gen>(hasUniqueNames()) = moduleMappings.map((it) ->
+  if (it is TypescriptMapping.Class)
+    new ClassGen {
+      mappings = module.mappings
+      mapping = it
+    }
+  else
+    new TypeAliasGen {
+      indent = module.indent
+      mappings = module.mappings
+      mapping = it
+      namespaceName = it.namespaceName
+    }
+)
+
+output {
+  files {
+    for (gen in generated) {
+      ["\(gen.mapping.name).pkl.ts"] {
+        text = gen.contents
+      }
+    }
+  }
+}
