@@ -1,5 +1,0 @@
-module test123
-
-x: String
-y: Int
-z: Listing

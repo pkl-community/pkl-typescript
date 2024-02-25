@@ -8,6 +8,14 @@ facts {
     utils.camelCase("hello space") == "helloSpace"
     utils.camelCase("hello-hyphen") == "helloHyphen"
     utils.camelCase("hello_underscore") == "helloUnderscore"
+    utils.camelCase("StartsWithCapital") == "startsWithCapital"
+    utils.camelCase("Starts upper") == "startsUpper"
+  }
+  ["snakeCase"] {
+    utils.snakeCase("this is a test") == "this_is_a_test"
+    utils.snakeCase("fromCamelCase") == "from_camel_case"
+    utils.snakeCase("FromPascalCase") == "from_pascal_case"
+    utils.snakeCase("Capitalword") == "capitalword"
   }
   ["normalizeName"] {
     utils.normalizeName("foo") == "Foo"

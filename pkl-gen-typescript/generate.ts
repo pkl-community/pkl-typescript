@@ -44,14 +44,13 @@ export async function generateTypescript(
   }
 
   const tmpDir = await mkdtemp(`${tmpdir}${sep}`);
-  const tmpFilePath = join(tmpDir, "pkl-gen-typescript.pkl");
 
   const outputDir = settings.outputDirectory
     ? toAbsolutePath(settings.outputDirectory)
     : join(cwd(), ".out");
   await mkdir(outputDir, { recursive: true });
 
-  for (let pklInputModule of pklModulePaths) {
+  for (let [index, pklInputModule] of pklModulePaths.entries()) {
     // TODO: This was taken from Swift - is it missing anything from the Go template?
     //       https://github.com/apple/pkl-go/blob/main/cmd/pkl-gen-go/pkg/template.gopkl
     const moduleToEvaluate = `
@@ -68,6 +67,8 @@ Evaluating temp Pkl module:
 ---
 ${moduleToEvaluate}`)
       : null;
+
+    const tmpFilePath = join(tmpDir, `pkl-gen-typescript-${index}.pkl`);
 
     await writeFile(tmpFilePath, moduleToEvaluate, "utf-8");
     const files = (await evaluator.evaluateOutputFiles({

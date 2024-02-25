@@ -8,7 +8,7 @@ import "utils.pkl"
 /// The TypeScript module path, e.g. `@myorg/myproj/appconfig`
 typescriptModule: String?
 
-/// The short name of the go package, e.g. `appconfig`
+/// The short name of the TypeScript package, e.g. `appconfig`
 typescriptModuleShort: String? = if (typescriptModule != null) utils.normalizeName(typescriptModule.split("/").last) else null
 
 /// The exposed simple name of this type (either the enum's name or the struct or interface name).
@@ -22,7 +22,7 @@ seenMappings: List<TypescriptMapping>
 /// The source for this mapping
 source: reflect.TypeDeclaration
 
-/// The exposed Go type.
+/// The exposed TypeScript type.
 type: Type
 
 /// The set of names already seen prior to creating mappings for this module.

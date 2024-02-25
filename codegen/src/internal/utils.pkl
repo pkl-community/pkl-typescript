@@ -188,7 +188,17 @@ function normalizeName(name: String) =
 
 function camelCase(str: String) =
   let (parts = splitNameOnNonLettersOrDigits(str))
-  parts.mapIndexed((i, p) -> if (i == 0) p else p.capitalize()).join("")
+  parts.mapIndexed((i, p) -> if (i == 0) p.decapitalize() else p.capitalize()).join("")
+
+function snakeCase(str: String): String =
+  let (parts = splitNameOnNonLettersOrDigits(str))
+  let (separator = "_")
+  parts.map((part) ->
+    part.replaceAllMapped(
+      Regex("([a-z0-9])([A-Z])"),
+      (match) -> "\(match.groups[1])\(separator)\(match.groups[2])"
+    )
+  ).join(separator).toLowerCase()
 
 function renderImports(imports: List<String>): String =
   let (distinctImports = imports.distinct)
