@@ -13,49 +13,11 @@ import "internal/utils.pkl"
 /// The module that should be generated.
 moduleToGenerate: Module
 
-// typealias EnumMember = reflect.DeclaredType|reflect.StringLiteralType|reflect.NullableType|reflect.NothingType
-
-// function hasDistinctEnumNames(members: List<reflect.StringLiteralType>) =
-//   let (names = members.map((it) -> utils.normalizeEnumName(it.value)))
-//     names.isDistinct
-
-// // noinspection TypeMismatch
-// function isEnumLike(decl: reflect.TypeDeclaration) =
-//   decl is reflect.TypeAlias
-//     &&
-//     let (referent = decl.referent)
-//       referent is reflect.UnionType
-//       && referent.members.every((t) -> t is EnumMember)
-//       &&
-//         if (referent.members is List<reflect.StringLiteralType>)
-//           hasDistinctEnumNames(referent.members)
-//         else true
-
-// // noinspection UnresolvedElement
 function getTypescriptModuleName(decl: reflect.TypeDeclaration): String? =
   decl.enclosingDeclaration
     .annotations
     .findOrNull((it) -> it.getClass().toString() == "pkl.typescript.typescript#Module")
     ?.name
-
-// function gatherEnums(decl: List<reflect.TypeDeclaration>): List<SwiftMapping> =
-//   decl
-//     .filter((it) -> isEnumLike(it))
-//     .fold(List(), (acc, it) -> acc.add(new SwiftMapping.Enum {
-//       swiftModuleName = getSwiftModuleName(it)
-//       source = it
-//       seenMappings = acc
-//     }))
-
-// function gatherTypeAliases(decl: List<reflect.TypeDeclaration>): Mixin<List<SwiftMapping>> =
-//   (acc) ->
-//     decl
-//       .filter((it) -> it is reflect.TypeAlias && !isEnumLike(it))
-//       .fold(acc, (accum, it) -> accum.add(new SwiftMapping.TypeAlias {
-//         swiftModuleName = getSwiftModuleName(it)
-//         source = it
-//         seenMappings = accum
-//       }))
 
 function gatherClasses(decl: List<reflect.TypeDeclaration>): Mixin<List<TypescriptMapping>> =
   (acc) ->
@@ -70,10 +32,8 @@ function gatherClasses(decl: List<reflect.TypeDeclaration>): Mixin<List<Typescri
 local allMappings: List<TypescriptMapping> =
   let (clazz = reflect.Module(moduleToGenerate).moduleClass)
   let (declarations = gatherer.gatherTypeDeclarations(clazz, List()))
-    // gatherEnums(declarations) |> 
     List() |>
-    gatherClasses(declarations) // |> 
-    // gatherTypeAliases(declarations)
+    gatherClasses(declarations)
 
 local modules = allMappings
   .groupBy((it) -> it.typescriptModule)
@@ -81,7 +41,6 @@ local modules = allMappings
     typescriptModule = _moduleName
     `module` = _mappings.first.source.enclosingDeclaration
     mappings = allMappings
-    // moduleMappings = _mappings // TODO(Jason): necessary?
   })
 
 output {
