@@ -18,11 +18,11 @@ facts {
     utils.normalizeName("snake_case") == "SnakeCase"
   }
   ["isValidTypescriptName"] {
-    utils.isValidTypescriptName("hello") == true
-    utils.isValidTypescriptName("123") == false
-    utils.isValidTypescriptName("+invalid") == false
-    module.catch(() -> utils.isValidTypescriptName("await")).startsWith("Name")
-    module.catch(() -> utils.isValidTypescriptName("as")).startsWith("Name")
+    utils.isValidTypescriptName.apply("hello") == true
+    utils.isValidTypescriptName.apply("123") == false
+    utils.isValidTypescriptName.apply("+invalid") == false
+    module.catch(() -> utils.isValidTypescriptName.apply("await")).startsWith("Name")
+    module.catch(() -> utils.isValidTypescriptName.apply("as")).startsWith("Name")
   }
   ["renderImports"] {
     utils.renderImports(List(
