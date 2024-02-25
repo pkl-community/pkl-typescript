@@ -184,6 +184,9 @@ function renderImports(imports: List<String>): String =
   let (distinctImports = imports.distinct)
     new Listing {
       for (_, mod in distinctImports) {
-        "import \(camelCase(mod)) from \"\(mod)\""
+        // Use namespaced imports saves having to detect which values
+        // should be named-imported or relying on default export.
+        // This is primarily useful for pklTypescript itself.
+        "import * as \(camelCase(mod.split("/").last)) from \"\(mod)\""
       }
     }.join("\n")

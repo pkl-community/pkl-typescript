@@ -31,7 +31,7 @@ class Map extends Type {
 
   imports = elem.imports
 
-  function render(typescriptModule: String) =
+  function render(typescriptModule: String?) =
     "Map<\(key.render(typescriptModule)), \(elem.render(typescriptModule))>"
 }
 
@@ -40,7 +40,7 @@ class Array extends Type {
 
   imports = elem.imports
 
-  function render(typescriptModule: String) = "Array<\(elem.render(typescriptModule))>"
+  function render(typescriptModule: String?) = "Array<\(elem.render(typescriptModule))>"
 }
 
 class Set extends Type {
@@ -48,7 +48,7 @@ class Set extends Type {
 
   imports = elem.imports
 
-  function render(typescriptModule: String) = "Set<\(elem.render(typescriptModule))>"
+  function render(typescriptModule: String?) = "Set<\(elem.render(typescriptModule))>"
 }
 
 class Tuple extends Type {
@@ -56,7 +56,7 @@ class Tuple extends Type {
 
   imports = elem.imports
 
-  function render(typescriptModule: String) = "readonly [" +
+  function render(typescriptModule: String?) = "readonly [" +
     elems.map((e) -> e.render(typescriptModule)).join(", ")
     + "]"
 }
@@ -85,14 +85,14 @@ class Declared extends Type {
   /// The type arguments, if any.
   typeArguments: List<Type>?
 
-  function renderBase(typescriptModule: String) =
-    if (`module` != null && typescriptModule != importPath) "\(utils.normalizeName(`module`)).\(typeName)"
+  function renderBase(typescriptModule: String?) =
+    if (`module` != null && typescriptModule != null && typescriptModule != importPath) "\(utils.normalizeName(`module`)).\(typeName)"
     else typeName
 
-  function renderTypeArguments(typescriptModule: String) =
+  function renderTypeArguments(typescriptModule: String?) =
     if (typeArguments == null) ""
     else "<" + typeArguments.map((t) -> t.render(typescriptModule)).join(", ") + ">"
 
-  function render(typescriptModule: String) =
+  function render(typescriptModule: String?) =
     renderBase(typescriptModule) + renderTypeArguments(typescriptModule)
 }

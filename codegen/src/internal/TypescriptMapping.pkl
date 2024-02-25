@@ -6,10 +6,10 @@ import "pkl:reflect"
 import "utils.pkl"
 
 /// The TypeScript module path, e.g. `@myorg/myproj/appconfig`
-typescriptModule: String
+typescriptModule: String?
 
 /// The short name of the go package, e.g. `appconfig`
-typescriptModuleShort: String = utils.normalizeName(typescriptModule.split("/").last)
+typescriptModuleShort: String? = if (typescriptModule != null) utils.normalizeName(typescriptModule.split("/").last) else null
 
 /// The exposed simple name of this type (either the enum's name or the struct or interface name).
 name: String
@@ -45,7 +45,7 @@ class Enum extends TypescriptMapping {
   type = new Type.Declared {
     typeName = name
     importPath = self.typescriptModule
-    package = self.typescriptModuleShort
+    `module` = self.typescriptModuleShort
   }
 
   /// The member constituents of this enum
@@ -77,7 +77,7 @@ class Class extends TypescriptMapping {
       type = new Type.Declared {
         typeName = self.name
         importPath = self.typescriptModule
-        package = self.typescriptModuleShort
+        `module` = self.typescriptModuleShort
       }
     }
 }
