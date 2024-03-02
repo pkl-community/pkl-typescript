@@ -1,0 +1,2 @@
+address: String
+port: Int16
