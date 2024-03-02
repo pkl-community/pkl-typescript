@@ -163,9 +163,6 @@ function renderDocComment(docComment: String, indent: String) =
     )
     .join("\n")
 
-function renderHeaderComment(`module`: reflect.Module) =
-  "// Code generated from Pkl module `\(`module`.name)`. DO NOT EDIT."
-
 
 function canBeNormalizedToEnumName(name: String) =
   name == "" || splitNameOnNonLettersOrDigits(name).length > 0

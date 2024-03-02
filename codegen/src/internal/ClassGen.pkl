@@ -12,12 +12,17 @@ clazz: reflect.Class = mapping.source as reflect.Class
 
 classInfo: TypescriptMapping.Class = mapping as TypescriptMapping.Class
 
+local isModule: Boolean = clazz.enclosingDeclaration.moduleClass == clazz
+
 contents = new Listing {
   when (!imports.isEmpty) {
     utils.renderImports(imports)
     ""
   }
+
   when (interface != null) {
+    if (isModule) "// Ref: Module root." else "// Ref: Pkl class `\(clazz.enclosingDeclaration.name).\(clazz.name)`."
+
     interface
   }
 }.join("\n")
@@ -39,8 +44,6 @@ local imports =
     // List("../src")
     List("@pkl-community/pkl-typescript")
     else List())
-
-local isModule: Boolean = clazz.enclosingDeclaration.moduleClass == clazz
 
 local function getAllProperties(clazz: reflect.Class?): List<reflect.Property> =
   if (clazz == null) List()
