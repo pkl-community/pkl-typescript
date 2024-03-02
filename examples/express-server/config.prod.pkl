@@ -1,4 +1,4 @@
 amends "ConfigSchema.pkl"
 
-address = "pkl-is-awesome.com"
+address = "example.com"
 port = 443
