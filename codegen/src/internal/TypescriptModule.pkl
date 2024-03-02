@@ -72,9 +72,12 @@ contents: String = new Listing {
     // LoadFromPath loads the pkl module at the given path and evaluates it into a \(moduleClass.name)
     export const loadFromPath = async (path: string): Promise<\(moduleClass.type.render(moduleClass.typescriptModule))> => {
       const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);
-      const result = await load(evaluator, pklTypescript.FileSource(path));
-      evaluator.close()
-      return result
+      try {
+        const result = await load(evaluator, pklTypescript.FileSource(path));
+        return result
+      } finally {
+        evaluator.close()
+      }
     };
 
     export const load = (evaluator: pklTypescript.Evaluator, source: pklTypescript.ModuleSource): Promise<\(moduleClass.type.render(moduleClass.typescriptModule))> =>
