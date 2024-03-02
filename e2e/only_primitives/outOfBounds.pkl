@@ -1,0 +1,4 @@
+amends "schema.pkl"
+
+addr = "localhost"
+port = 3000000000000
