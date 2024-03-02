@@ -1,63 +1,57 @@
 examples {
   ["Empty class"] {
     """
-    // Code generated from Pkl module `ClassGen.test`. DO NOT EDIT.
+    // Ref: Pkl class `ClassGen.test.EmptyClass`.
     export interface EmptyClass {
     }
-    
     """
   }
   ["One-property class"] {
     """
-    // Code generated from Pkl module `ClassGen.test`. DO NOT EDIT.
+    // Ref: Pkl class `ClassGen.test.OnePropertyClass`.
     export interface OnePropertyClass {
       name: string
     }
-    
     """
   }
   ["Multi-property class"] {
     """
-    // Code generated from Pkl module `ClassGen.test`. DO NOT EDIT.
+    // Ref: Pkl class `ClassGen.test.MultiPropertyClass`.
     export interface MultiPropertyClass {
       name: string
     
       age: number
     }
-    
     """
   }
   ["Class with a listing proprety"] {
     """
-    // Code generated from Pkl module `ClassGen.test`. DO NOT EDIT.
+    // Ref: Pkl class `ClassGen.test.WithListingClass`.
     export interface WithListingClass {
       name: string
     
       hobbies: Array<string>
     }
-    
     """
   }
   ["Class with a mapping property"] {
     """
-    // Code generated from Pkl module `ClassGen.test`. DO NOT EDIT.
+    // Ref: Pkl class `ClassGen.test.WithMappingClass`.
     export interface WithMappingClass {
       name: string
     
       siblingAges: Map<string, number>
     }
-    
     """
   }
   ["Class with a nested mapping property"] {
     """
-    // Code generated from Pkl module `ClassGen.test`. DO NOT EDIT.
+    // Ref: Pkl class `ClassGen.test.WithNestedMappingClass`.
     export interface WithNestedMappingClass {
       name: string
     
       siblings: Map<string, Map<string, number>>
     }
-    
     """
   }
 }

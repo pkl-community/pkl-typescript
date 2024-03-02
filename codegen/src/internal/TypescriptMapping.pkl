@@ -67,7 +67,13 @@ class Class extends TypescriptMapping {
 
   names = List(interface?.name).filterNonNull() as List<String>
 
-  type = if (interface != null) interface.type else struct.type
+  type = if (interface != null)
+    // Default: produce interfaces for Pkl classes
+    interface.type
+  else
+    // What other kinds of output could a Pkl class produce?
+    // Not a struct, that's for sure!
+    struct.type
 
   name = utils.toTypescriptName(clazz)
 

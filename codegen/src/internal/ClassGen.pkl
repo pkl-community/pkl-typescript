@@ -12,29 +12,19 @@ clazz: reflect.Class = mapping.source as reflect.Class
 
 classInfo: TypescriptMapping.Class = mapping as TypescriptMapping.Class
 
+local isModule: Boolean = clazz.enclosingDeclaration.moduleClass == clazz
+
 contents = new Listing {
-  utils.renderHeaderComment(clazz.enclosingDeclaration)
   when (!imports.isEmpty) {
     utils.renderImports(imports)
     ""
   }
+
   when (interface != null) {
+    if (isModule) "// Ref: Module root." else "// Ref: Pkl class `\(clazz.enclosingDeclaration.name).\(clazz.name)`."
+
     interface
   }
-  when (isModule && !isAbstract) {
-    """
-
-    // LoadFromPath loads the pkl module at the given path and evaluates it into a \(classInfo.name)
-    export const loadFromPath = async (path: string): Promise<\(classInfo.type.render(classInfo.typescriptModule))> => {
-      const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);
-      return load(evaluator, pklTypescript.FileSource(path));
-    };
-
-    export const load = (evaluator: pklTypescript.Evaluator, source: pklTypescript.ModuleSource): Promise<\(classInfo.type.render(classInfo.typescriptModule))> =>
-      evaluator.evaluateModule(source) as Promise<\(classInfo.type.render(classInfo.typescriptModule))>;
-    """
-  }
-  ""
 }.join("\n")
 
 local isSuperOpen: Boolean = clazz.superclass.modifiers.contains("open")
@@ -54,8 +44,6 @@ local imports =
     // List("../src")
     List("@pkl-community/pkl-typescript")
     else List())
-
-local isModule: Boolean = clazz.enclosingDeclaration.moduleClass == clazz
 
 local function getAllProperties(clazz: reflect.Class?): List<reflect.Property> =
   if (clazz == null) List()
