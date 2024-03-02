@@ -7,7 +7,7 @@ export interface WithClass {
   value: MyCustomClass
 }
 
-// Ref: Pkl class `MyCustomClass`.
+// Ref: Pkl class `withClass.MyCustomClass`.
 export interface MyCustomClass {
   x: string
 

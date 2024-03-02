@@ -1,11 +1,8 @@
 import { generateTypescript } from "./generate";
-import {
-  GeneratorSettings,
-  load as loadGeneratorSettings,
-} from "./generated/GeneratorSettings.pkl";
+import { GeneratorSettings, load as loadGeneratorSettings } from "./generated";
 import { join } from "path";
 import { cwd } from "process";
-import { PreconfiguredOptions, newEvaluator } from "src";
+import { PreconfiguredOptions, newEvaluator } from "../src";
 import { pathToFileURL } from "url";
 import {
   command,
@@ -114,10 +111,10 @@ export const cli = command({
   },
 });
 
-export default async function main() {
-  run(cli, process.argv.slice(2));
+export default async function main(args: string[]) {
+  return run(cli, args);
 }
 
 if (require.main === module) {
-  main();
+  main(process.argv.slice(2));
 }
