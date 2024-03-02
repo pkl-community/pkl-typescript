@@ -66,7 +66,6 @@ contents: String = new Listing {
 
   when (!`module`.modifiers.contains("open") && !`module`.modifiers.contains("abstract")) {
     """
-
     // LoadFromPath loads the pkl module at the given path and evaluates it into a \(moduleClass.name)
     export const loadFromPath = async (path: string): Promise<\(moduleClass.type.render(moduleClass.typescriptModule))> => {
       const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);
