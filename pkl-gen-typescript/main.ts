@@ -93,21 +93,24 @@ export const cli = command({
     }
 
     const evaluator = await newEvaluator(PreconfiguredOptions);
-    const settings = (
-      settingsFile
-        ? await loadGeneratorSettings(evaluator, {
-            uri: pathToFileURL(settingsFile),
-          })
-        : // This ordering means that the generator-settings.pkl overrides CLI args
-          // TODO: reverse this precedence, merge CLI args with settings file
-          {
-            dryRun,
-            outputDirectory,
-          }
-    ) as GeneratorSettings;
+    try {
+      const settings = (
+        settingsFile
+          ? await loadGeneratorSettings(evaluator, {
+              uri: pathToFileURL(settingsFile),
+            })
+          : // This ordering means that the generator-settings.pkl overrides CLI args
+            // TODO: reverse this precedence, merge CLI args with settings file
+            {
+              dryRun,
+              outputDirectory,
+            }
+      ) as GeneratorSettings;
 
-    await generateTypescript(evaluator, pklModules, settings);
-    evaluator.close();
+      await generateTypescript(evaluator, pklModules, settings);
+    } finally {
+      evaluator.close();
+    }
   },
 });
 
