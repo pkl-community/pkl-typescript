@@ -1,0 +1,6 @@
+class MyCustomClass {
+  x: String
+  y: Int
+}
+
+value: MyCustomClass

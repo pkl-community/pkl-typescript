@@ -18,7 +18,7 @@ export async function generateTypescript(
 ) {
   consola.start(
     `Generating TypeScript sources for modules ${chalk.cyan(
-      pklModulePaths.join(",")
+      pklModulePaths.join(", ")
     )}`
   );
 

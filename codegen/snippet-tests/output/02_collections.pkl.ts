@@ -23,6 +23,7 @@ export interface N02Collections {
   mapStringInt: Map<string, number>
 }
 
+
 // LoadFromPath loads the pkl module at the given path and evaluates it into a N02Collections
 export const loadFromPath = async (path: string): Promise<N02Collections> => {
   const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);

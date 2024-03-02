@@ -1,0 +1,2 @@
+x: "one"|"another"
+y: String|Int
