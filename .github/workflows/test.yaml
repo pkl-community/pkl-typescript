@@ -54,4 +54,4 @@ jobs:
           cache: npm
 
       - run: npm install
-      - run: npm test:e2e
+      - run: npm run test:e2e
