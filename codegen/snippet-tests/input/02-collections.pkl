@@ -1,0 +1,11 @@
+listingAny: Listing
+listingString: Listing<String>
+mappingAny: Mapping
+mappingStringString: Mapping<String, String>
+mappingStringInt: Mapping<String, Int>
+
+listAny: List
+listString: List<String>
+mapAny: Map
+mapStringString: Map<String, String>
+mapStringInt: Map<String, Int>

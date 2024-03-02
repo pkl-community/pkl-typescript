@@ -1,0 +1,5 @@
+nullableString: String?
+nullableInt: Int?
+
+nullableListingOfStrings: Listing<String>?
+listingOfNullableStrings: Listing<String?>
