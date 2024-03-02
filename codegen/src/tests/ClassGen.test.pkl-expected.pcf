@@ -2,7 +2,7 @@ examples {
   ["Empty class"] {
     """
     // Code generated from Pkl module `ClassGen.test`. DO NOT EDIT.
-    interface EmptyClass {
+    export interface EmptyClass {
     }
     
     """
@@ -10,7 +10,7 @@ examples {
   ["One-property class"] {
     """
     // Code generated from Pkl module `ClassGen.test`. DO NOT EDIT.
-    interface OnePropertyClass {
+    export interface OnePropertyClass {
       name: string
     }
     
@@ -19,7 +19,7 @@ examples {
   ["Multi-property class"] {
     """
     // Code generated from Pkl module `ClassGen.test`. DO NOT EDIT.
-    interface MultiPropertyClass {
+    export interface MultiPropertyClass {
       name: string
     
       age: number
@@ -30,7 +30,7 @@ examples {
   ["Class with a listing proprety"] {
     """
     // Code generated from Pkl module `ClassGen.test`. DO NOT EDIT.
-    interface WithListingClass {
+    export interface WithListingClass {
       name: string
     
       hobbies: Array<string>
@@ -41,7 +41,7 @@ examples {
   ["Class with a mapping property"] {
     """
     // Code generated from Pkl module `ClassGen.test`. DO NOT EDIT.
-    interface WithMappingClass {
+    export interface WithMappingClass {
       name: string
     
       siblingAges: Map<string, number>
@@ -52,7 +52,7 @@ examples {
   ["Class with a nested mapping property"] {
     """
     // Code generated from Pkl module `ClassGen.test`. DO NOT EDIT.
-    interface WithNestedMappingClass {
+    export interface WithNestedMappingClass {
       name: string
     
       siblings: Map<string, Map<string, number>>

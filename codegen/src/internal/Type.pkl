@@ -66,7 +66,7 @@ class Nullable extends Type {
 
   imports = elem.imports
 
-  function render(typescriptModule: String) = "\(elem.render(typescriptModule))|null"
+  function render(typescriptModule: String?) = "\(elem.render(typescriptModule))|null"
 }
 
 class Declared extends Type {

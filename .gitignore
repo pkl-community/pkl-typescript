@@ -1,2 +1,5 @@
 node_modules
 lib
+.build
+.out*
+/generator-settings.pkl

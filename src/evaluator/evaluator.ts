@@ -129,8 +129,10 @@ export class EvaluatorImpl implements Evaluator {
     switch (resp.level) {
       case 0:
         console.trace(resp.message, resp.frameUri)
+        break
       case 1:
         console.warn(resp.message, resp.frameUri)
+        break
       default:
         // log level beyond 1 is impossible
         throw new Error(`unknown log level: ${resp.level}`)

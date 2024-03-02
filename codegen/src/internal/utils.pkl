@@ -144,7 +144,10 @@ keywords: List<String> = List(
   "set"
 )
 
-function isValidTypescriptName(it: String) =
+/// As per: https://stackoverflow.com/questions/1661197/what-characters-are-valid-for-javascript-variable-names/9337047#9337047
+/// > An identifier must start with $, _, or any character in the Unicode categories “Uppercase letter (Lu)”, “Lowercase letter (Ll)”, “Titlecase letter (Lt)”, “Modifier letter (Lm)”, “Other letter (Lo)”, or “Letter number (Nl)”.
+/// > The rest of the string can contain the same characters, plus any U+200C zero width non-joiner characters, U+200D zero width joiner characters, and characters in the Unicode categories “Non-spacing mark (Mn)”, “Spacing combining mark (Mc)”, “Decimal digit number (Nd)”, or “Connector punctuation (Pc)”.
+isValidTypescriptName = (it: String) ->
   if (keywords.contains(it))
     throw("""
       Name `\(it)` is not valid because it clashes with a JavaScript/TypeScript keyword`.
@@ -185,7 +188,17 @@ function normalizeName(name: String) =
 
 function camelCase(str: String) =
   let (parts = splitNameOnNonLettersOrDigits(str))
-  parts.mapIndexed((i, p) -> if (i == 0) p else p.capitalize()).join("")
+  parts.mapIndexed((i, p) -> if (i == 0) p.decapitalize() else p.capitalize()).join("")
+
+function snakeCase(str: String): String =
+  let (parts = splitNameOnNonLettersOrDigits(str))
+  let (separator = "_")
+  parts.map((part) ->
+    part.replaceAllMapped(
+      Regex("([a-z0-9])([A-Z])"),
+      (match) -> "\(match.groups[1])\(separator)\(match.groups[2])"
+    )
+  ).join(separator).toLowerCase()
 
 function renderImports(imports: List<String>): String =
   let (distinctImports = imports.distinct)

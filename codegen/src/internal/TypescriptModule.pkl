@@ -2,6 +2,7 @@ import "pkl:reflect"
 import "TypescriptMapping.pkl"
 import "Gen.pkl"
 import "ClassGen.pkl"
+import "utils.pkl"
 
 `module`: reflect.Module
 
@@ -63,7 +64,10 @@ local generated: List<Gen>(hasUniqueNames()) = moduleMappings.map((it) ->
 output {
   files {
     for (gen in generated) {
-      ["\(gen.mapping.name).pkl.ts"] {
+      // Snake-case the generated filenames, as per the Google TypeScript styleguide:
+      // https://google.github.io/styleguide/tsguide.html#identifiers-imports
+      // > "Module namespace imports are lowerCamelCase while files are snake_case"
+      ["\(utils.snakeCase(gen.mapping.name)).pkl.ts"] {
         text = gen.contents
       }
     }
