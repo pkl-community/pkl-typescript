@@ -1,6 +1,6 @@
 /// Generates TypeScript sources from Pkl
 @typescript.Module { name = "pkl_gen_typescript" }
-@ModuleInfo { minPklVersion = "0.25.1" }
+@ModuleInfo { minPklVersion = "0.25.0" }
 module pkl.typescript.Generator
 
 import "pkl:reflect"

@@ -1,0 +1,3 @@
+amends "schema.pkl"
+
+addr = "localhost"

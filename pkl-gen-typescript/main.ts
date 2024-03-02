@@ -1,11 +1,8 @@
 import { generateTypescript } from "./generate";
-import {
-  GeneratorSettings,
-  load as loadGeneratorSettings,
-} from "./generated/GeneratorSettings.pkl";
+import { GeneratorSettings, load as loadGeneratorSettings } from "./generated";
 import { join } from "path";
 import { cwd } from "process";
-import { PreconfiguredOptions, newEvaluator } from "src";
+import { PreconfiguredOptions, newEvaluator } from "../src";
 import { pathToFileURL } from "url";
 import {
   command,
@@ -96,28 +93,31 @@ export const cli = command({
     }
 
     const evaluator = await newEvaluator(PreconfiguredOptions);
-    const settings = (
-      settingsFile
-        ? await loadGeneratorSettings(evaluator, {
-            uri: pathToFileURL(settingsFile),
-          })
-        : // This ordering means that the generator-settings.pkl overrides CLI args
-          // TODO: reverse this precedence, merge CLI args with settings file
-          {
-            dryRun,
-            outputDirectory,
-          }
-    ) as GeneratorSettings;
+    try {
+      const settings = (
+        settingsFile
+          ? await loadGeneratorSettings(evaluator, {
+              uri: pathToFileURL(settingsFile),
+            })
+          : // This ordering means that the generator-settings.pkl overrides CLI args
+            // TODO: reverse this precedence, merge CLI args with settings file
+            {
+              dryRun,
+              outputDirectory,
+            }
+      ) as GeneratorSettings;
 
-    await generateTypescript(evaluator, pklModules, settings);
-    evaluator.close();
+      await generateTypescript(evaluator, pklModules, settings);
+    } finally {
+      evaluator.close();
+    }
   },
 });
 
-export default async function main() {
-  run(cli, process.argv.slice(2));
+export default async function main(args: string[]) {
+  return run(cli, args);
 }
 
 if (require.main === module) {
-  main();
+  main(process.argv.slice(2));
 }

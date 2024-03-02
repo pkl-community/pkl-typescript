@@ -4,7 +4,7 @@ import { isAbsolute, join, sep } from "path";
 import { cwd } from "process";
 import { Evaluator } from "src/evaluator/evaluator";
 import { pathToFileURL } from "url";
-import type { GeneratorSettings } from "./generated/GeneratorSettings.pkl";
+import type { GeneratorSettings } from "./generated";
 import chalk from "chalk";
 import { consola } from "consola";
 

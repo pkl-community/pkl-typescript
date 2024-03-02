@@ -1,6 +1,4 @@
 // Settings used to configure code generation.
-@typescript.Module { name = "pkl_gen_typescript" }
-@typescript.Name { value = "GeneratorSettings" }
 module pkl.typescript.GeneratorSettings
 
 import "pkl:reflect"
