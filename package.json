@@ -18,7 +18,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc --declaration",
-    "test": "jest",
+    "test:e2e": "jest",
     "test:codegen": "pkl test $(find . -name '*.test.pkl')",
     "dev": "tsx pkl-gen-typescript/main.ts",
     "gen-snippets": "npm run dev -- --settings-file codegen/snippet-tests/generator-settings.pkl -o codegen/snippet-tests/output codegen/snippet-tests/input/*.pkl"

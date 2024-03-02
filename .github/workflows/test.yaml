@@ -1,4 +1,4 @@
-name: codegen test
+name: test
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  unit:
     runs-on: ubuntu-latest
 
     strategy:
@@ -38,3 +38,20 @@ jobs:
         run: |
           tests=$(find . -name '*.test.pkl')
           pkl test $tests
+
+  e2e:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18, 20]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - run: npm install
+      - run: npm test:e2e
