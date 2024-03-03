@@ -1,0 +1,4 @@
+amends "ConfigSchema.pkl"
+
+address = "localhost"
+port = 3003
