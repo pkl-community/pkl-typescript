@@ -16,7 +16,12 @@ export interface N03Nullables {
 // LoadFromPath loads the pkl module at the given path and evaluates it into a N03Nullables
 export const loadFromPath = async (path: string): Promise<N03Nullables> => {
   const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);
-  return load(evaluator, pklTypescript.FileSource(path));
+  try {
+    const result = await load(evaluator, pklTypescript.FileSource(path));
+    return result
+  } finally {
+    evaluator.close()
+  }
 };
 
 export const load = (evaluator: pklTypescript.Evaluator, source: pklTypescript.ModuleSource): Promise<N03Nullables> =>
