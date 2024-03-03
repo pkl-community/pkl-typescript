@@ -17,7 +17,12 @@ export interface MyCustomClass {
 // LoadFromPath loads the pkl module at the given path and evaluates it into a WithClass
 export const loadFromPath = async (path: string): Promise<WithClass> => {
   const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);
-  return load(evaluator, pklTypescript.FileSource(path));
+  try {
+    const result = await load(evaluator, pklTypescript.FileSource(path));
+    return result
+  } finally {
+    evaluator.close()
+  }
 };
 
 export const load = (evaluator: pklTypescript.Evaluator, source: pklTypescript.ModuleSource): Promise<WithClass> =>

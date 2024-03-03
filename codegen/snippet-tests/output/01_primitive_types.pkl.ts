@@ -24,7 +24,12 @@ export interface N01PrimitiveTypes {
 // LoadFromPath loads the pkl module at the given path and evaluates it into a N01PrimitiveTypes
 export const loadFromPath = async (path: string): Promise<N01PrimitiveTypes> => {
   const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);
-  return load(evaluator, pklTypescript.FileSource(path));
+  try {
+    const result = await load(evaluator, pklTypescript.FileSource(path));
+    return result
+  } finally {
+    evaluator.close()
+  }
 };
 
 export const load = (evaluator: pklTypescript.Evaluator, source: pklTypescript.ModuleSource): Promise<N01PrimitiveTypes> =>
