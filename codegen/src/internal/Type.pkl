@@ -54,7 +54,7 @@ class Set extends Type {
 class Tuple extends Type {
   elems: List<Type>
 
-  imports = elem.imports
+  imports = elems.toList().flatMap((e) -> e.imports)
 
   function render(typescriptModule: String?) = "readonly [" +
     elems.map((e) -> e.render(typescriptModule)).join(", ")
