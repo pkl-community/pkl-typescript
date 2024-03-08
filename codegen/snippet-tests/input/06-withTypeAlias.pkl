@@ -1,0 +1,12 @@
+typealias MyStringAlias = String
+
+x: MyStringAlias
+
+class MyClassToBeAliased {
+  a: String
+  b: Int
+}
+
+typealias MyAliasedClass = MyClassToBeAliased
+
+y: MyAliasedClass

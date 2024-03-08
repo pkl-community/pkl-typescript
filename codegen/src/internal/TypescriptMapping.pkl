@@ -60,6 +60,21 @@ class Enum extends TypescriptMapping {
       )
 }
 
+class TypeAlias extends TypescriptMapping {
+  local self = this
+
+  alias: reflect.TypeAlias = self.source as reflect.TypeAlias
+
+  name = utils.toTypescriptName(self.source)
+
+  names = List(name)
+
+  type = new Type.Declared {
+    typeName = name
+    `module` = self.typescriptModule
+  }
+}
+
 class Class extends TypescriptMapping {
   local self = this
 
