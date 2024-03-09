@@ -2,6 +2,7 @@ import "pkl:reflect"
 import "TypescriptMapping.pkl"
 import "Gen.pkl"
 import "ClassGen.pkl"
+import "TypeAliasGen.pkl"
 import "utils.pkl"
 
 `module`: reflect.Module
@@ -48,12 +49,17 @@ local function hasUniqueNames(): Boolean =
 
 local generated: List<Gen>(hasUniqueNames()) =
   moduleMappings.map((it) ->
-  // if (it is TypescriptMapping.Class)
-    new ClassGen {
-      mappings = module.mappings
-      mapping = it
-    })
-  // }
+    if (it is TypescriptMapping.TypeAlias)
+      new TypeAliasGen {
+        mappings = module.mappings
+        mapping = it
+      }
+    else
+      new ClassGen {
+        mappings = module.mappings
+        mapping = it
+      }
+  )
   // If not a class, what then?
 
 contents: String = new Listing {

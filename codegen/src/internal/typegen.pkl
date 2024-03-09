@@ -127,6 +127,7 @@ mappedTypes: Mapping<Class|TypeAlias, Type> = new {
   [Boolean] = new Type.Declared { typeName = "boolean" }
   [Null] = new Type.Declared { typeName = "null" }
   [Any] = anyType
+  [Char] = new Type.Declared { typeName = "string" }
   [Duration] = new Type.Declared {
     `module` = "pkl-types"
     typeName = "Duration"

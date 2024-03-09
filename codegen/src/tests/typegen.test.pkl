@@ -46,6 +46,12 @@ local class Pairs {
 
 local reflectedPairs = reflect.Class(Pairs)
 
+local class Nothing {
+  res1: nothing
+}
+
+local nothingType: reflect.Type = reflect.Class(Nothing).properties["res1"].type
+
 local mod = reflect.Module(module).moduleClass
 
 local function generateType(typ: reflect.Type) = typegen.generateType(typ, mod, List()).render("")
@@ -67,6 +73,9 @@ facts {
     generateType(reflect.dynamicType) == "PklTypes.Dynamic"
     generateType(reflect.dataSizeType) == "PklTypes.DataSize"
     generateType(reflect.durationType) == "PklTypes.Duration"
+    generateType(nothingType) == "never"
+    generateType(reflect.DeclaredType(reflect.TypeAlias(Char))) == "string"
+    generateType(reflect.DeclaredType(reflect.Class(Null))) == "null"
   }
   ["maps"] {
     generateType(reflectedMaps.properties["res1"].type) == "Map<string, string>"

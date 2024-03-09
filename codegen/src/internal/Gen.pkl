@@ -10,3 +10,5 @@ mappings: List<TypescriptMapping>
 
 /// The TypeScript contents
 contents: String
+
+typescriptModule: String?

@@ -29,11 +29,33 @@ function gatherClasses(decl: List<reflect.TypeDeclaration>): Mixin<List<Typescri
         seenMappings = accum
       }))
 
+function isEnumLike(decl: reflect.TypeDeclaration) =
+  decl is reflect.TypeAlias
+    &&
+    let (referent = decl.referent)
+      referent is reflect.UnionType
+      && referent.members.every((t) -> t is EnumMember)
+      &&
+        if (referent.members is List<reflect.StringLiteralType>)
+          hasDistinctEnumNames(referent.members)
+        else true
+
+function gatherTypeAliases(decl: List<reflect.TypeDeclaration>): Mixin<List<TypescriptMapping>> =
+  (acc) ->
+    decl
+      .filter((it) -> it is reflect.TypeAlias && !isEnumLike(it))
+      .fold(acc, (accum, it) -> accum.add(new TypescriptMapping.TypeAlias {
+        typescriptModule = getTypescriptModuleName(it)
+        source = it
+        seenMappings = accum
+      }))
+
 local allMappings: List<TypescriptMapping> =
   let (clazz = reflect.Module(moduleToGenerate).moduleClass)
   let (declarations = gatherer.gatherTypeDeclarations(clazz, List()))
     List() |>
-    gatherClasses(declarations)
+    gatherClasses(declarations) |>
+    gatherTypeAliases(declarations)
 
 local modules = allMappings
   .groupBy((it) -> it.typescriptModule)

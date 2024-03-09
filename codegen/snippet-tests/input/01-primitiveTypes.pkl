@@ -6,4 +6,4 @@ float: Float
 bool: Boolean
 nullType: Null
 anyType: Any
-
+nothingType: nothing
