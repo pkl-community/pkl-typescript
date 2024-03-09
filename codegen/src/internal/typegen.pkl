@@ -21,7 +21,7 @@ function generateType(
       new Type.Nullable { elem = _elem }
   else if (type is reflect.UnknownType) anyType
   else if (type is reflect.NothingType) new Type.Declared { typeName = "never" }
-  else if (type is reflect.StringLiteralType) new Type.Declared { typeName = "string" }
+  else if (type is reflect.StringLiteralType) new Type.Declared { typeName = "\"\(type.value)\"" }
   else throw("Unsure how to generate this type: \(type)")
 
 function generateUnionType(
