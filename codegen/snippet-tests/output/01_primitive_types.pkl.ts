@@ -19,6 +19,8 @@ export interface N01PrimitiveTypes {
   nullType: null
 
   anyType: any
+
+  nothingType: never
 }
 
 // LoadFromPath loads the pkl module at the given path and evaluates it into a N01PrimitiveTypes
