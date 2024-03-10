@@ -3,3 +3,4 @@ lib
 .build
 .out*
 /generator-settings.pkl
+dist
