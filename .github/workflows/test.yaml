@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install pkl
-        uses: pkl-community/setup-pkl@v0.0.1
+        uses: pkl-community/setup-pkl@v0
         with:
           pkl-version: ${{ matrix.pklVersion }}
 
@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install pkl
-        uses: pkl-community/setup-pkl@v0.0.1
+        uses: pkl-community/setup-pkl@v0
         with:
           pkl-version: ${{ matrix.pklVersion }}
 
@@ -62,7 +62,7 @@ jobs:
           cache: npm
 
       - name: Install pkl
-        uses: pkl-community/setup-pkl@v0.0.1
+        uses: pkl-community/setup-pkl@v0
         with:
           pkl-version: ${{ matrix.pklVersion }}
 
