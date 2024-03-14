@@ -4,3 +4,11 @@ class MyCustomClass {
 }
 
 value: MyCustomClass
+
+abstract class MyAbstractClass {
+  someString: String
+}
+
+class MyConcreteClass extends MyAbstractClass {
+  anotherString: String
+}
