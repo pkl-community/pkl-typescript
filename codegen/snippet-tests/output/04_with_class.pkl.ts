@@ -14,6 +14,16 @@ export interface MyCustomClass {
   y: number
 }
 
+// Ref: Pkl class `04-withClass.MyAbstractClass`.
+export interface MyAbstractClass {
+  someString: string
+}
+
+// Ref: Pkl class `04-withClass.MyConcreteClass`.
+export interface MyConcreteClass extends MyAbstractClass {
+  anotherString: string
+}
+
 // LoadFromPath loads the pkl module at the given path and evaluates it into a N04WithClass
 export const loadFromPath = async (path: string): Promise<N04WithClass> => {
   const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);

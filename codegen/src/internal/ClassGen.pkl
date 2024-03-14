@@ -77,12 +77,6 @@ function getFields(
   mappings: List<TypescriptMapping>
 ): Map<String, TypescriptInterfaceProperty> =
   let (isSuperOpen: Boolean = clazz.superclass.modifiers.contains("open"))
-  // add the properties of the superclass as fields unless it is an open class (because its struct gets embedded),
-  // or the class does not inherit.
-  let (superFields: Map<String, TypescriptInterfaceProperty> =
-    if (doesNotInherit(clazz) || isSuperOpen) Map()
-    else getFields(clazz.superclass!!, mappings)
-  )
   let (superProperties = getAllProperties(clazz.superclass))
     clazz.properties
       .filter((propName, prop: reflect.Property) ->
@@ -111,7 +105,7 @@ function getFields(
           name = utils.toTypescriptPropertyName(prop)
           property = prop
         }
-      ) + superFields.mapValues((_, field) -> (field) { isInherited = true })
+      )
 
 local function doesNotInherit(clazz: reflect.Class?) =
   clazz.superclass == null || clazz.superclass.reflectee == Module || clazz.superclass.reflectee == Typed
@@ -124,7 +118,7 @@ local interface: String = new Listing {
   (
     "export interface \(classInfo.interface.name) " +
     (if (superClass != null)
-      superClass.type.render(classInfo.typescriptPackage)
+      "extends " + superClass.type.render(classInfo.typescriptModule) + " "
       else "")
     + "{"
   )
