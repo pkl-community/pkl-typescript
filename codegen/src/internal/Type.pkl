@@ -51,6 +51,16 @@ class Set extends Type {
   function render(typescriptModule: String?) = "Set<\(elem.render(typescriptModule))>"
 }
 
+class Pair extends Type {
+  elems: List<Type>
+
+  imports = elems.toList().flatMap((e) -> e.imports)
+
+  function render(typescriptModule: String?) = "pklTypescript.Pair<" +
+    elems.map((e) -> e.render(typescriptModule)).join(", ")
+    + ">"
+}
+
 class Tuple extends Type {
   elems: List<Type>
 
