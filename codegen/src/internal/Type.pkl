@@ -61,6 +61,15 @@ class Tuple extends Type {
     + "]"
 }
 
+class Union extends Type {
+  elems: List<Type>
+
+  imports = elems.toList().flatMap((e) -> e.imports)
+
+  function render(typescriptModule: String?) =
+    elems.map((e) -> e.render(typescriptModule)).join(" | ")
+}
+
 class Nullable extends Type {
   elem: Type
 

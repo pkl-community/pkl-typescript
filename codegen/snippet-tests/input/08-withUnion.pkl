@@ -1,0 +1,12 @@
+x: "one"|"another"
+y: String|Int
+
+class X1 {
+  firstName: String
+}
+
+class X2 {
+  lastName: String
+}
+
+x1or2: X1|X2
