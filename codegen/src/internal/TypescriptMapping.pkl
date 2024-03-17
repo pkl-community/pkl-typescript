@@ -11,7 +11,7 @@ typescriptModule: String?
 /// The short name of the TypeScript package, e.g. `appconfig`
 typescriptModuleShort: String? = if (typescriptModule != null) utils.normalizeName(typescriptModule.split("/").last) else null
 
-/// The exposed simple name of this type (either the enum's name or the struct or interface name).
+/// The exposed simple name of this type
 name: String
 
 /// All names exposed by this mapping
@@ -22,7 +22,7 @@ seenMappings: List<TypescriptMapping>
 /// The source for this mapping
 source: reflect.TypeDeclaration
 
-/// The exposed TypeScript type.
+/// The exposed TypeScript type
 type: Type
 
 /// The set of names already seen prior to creating mappings for this module.
@@ -30,35 +30,6 @@ existingNames: List<String> = seenMappings.flatMap((it) ->
   if (it.typescriptModule == module.typescriptModule) it.names
   else List()
 )
-
-class Enum extends TypescriptMapping {
-  local self = this
-
-  local union: reflect.UnionType = alias.referent as reflect.UnionType
-
-  alias: reflect.TypeAlias = self.source as reflect.TypeAlias
-
-  name = utils.toTypescriptName(self.source)
-
-  names = members.map((it) -> it.typescriptName).add(name)
-
-  type = new Type.Declared {
-    typeName = name
-    importPath = self.typescriptModule
-    `module` = self.typescriptModuleShort
-  }
-
-  /// The member constituents of this enum
-  members: List<EnumMember> =
-    union.members
-      .filter((it) -> !(it is reflect.NothingType))
-      .fold(List(), (acc: List<EnumMember>, mem) ->
-        acc.add(new EnumMember {
-          pklName = (mem as reflect.StringLiteralType).value
-          typescriptModule = utils.normalizeEnumName(pklName)
-        })
-      )
-}
 
 class TypeAlias extends TypescriptMapping {
   local self = this
@@ -101,11 +72,6 @@ class Class extends TypescriptMapping {
         `module` = self.typescriptModuleShort
       }
     }
-}
-
-class EnumMember {
-  pklName: String
-  typescriptName: String
 }
 
 class Interface {

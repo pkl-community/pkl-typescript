@@ -27,9 +27,6 @@ class Module extends Annotation {
 ///
 /// This may be used to annotate modules, classes, typealiases, and properties.
 ///
-/// If the annotation is applied to a module, it determines the name of the namespace (the `enum` that holds all the
-/// module's members).
-///
 /// Examples:
 ///
 /// ```
