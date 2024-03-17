@@ -14,6 +14,10 @@ export interface N09CustomTypes {
 
   varDuration: pklTypescript.Duration
 
+  varIntSeq: pklTypescript.IntSeq
+
+  varRegex: pklTypescript.Regex
+
   varPair: pklTypescript.Pair<string, number>
 }
 
