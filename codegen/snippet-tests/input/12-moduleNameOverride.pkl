@@ -1,0 +1,18 @@
+@typescript.Name { value = "N12TypescriptGeneratedInterface" }
+module n12.pkl.typescript.tests.moduleNameOverride
+
+import "../../src/typescript.pkl"
+
+@typescript.Name { value = "MyCustomClassName" }
+class CustomClassImpl {
+  name: String
+}
+
+@typescript.Name { value = "classTypeProperty" }
+x: CustomClassImpl
+
+@typescript.Name { value = "ThisTypeAlias" }
+typealias AliasName = "x"|"y"|CustomClassImpl
+
+@typescript.Name { value = "typeAliasProperty" }
+y: AliasName
