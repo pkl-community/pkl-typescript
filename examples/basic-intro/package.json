@@ -1,0 +1,14 @@
+{
+  "name": "basic-intro",
+  "version": "0.0.1",
+  "module": "./index.ts",
+  "dependencies": {
+    "pkl-typescript": "file:../..",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
+  },
+  "scripts": {
+    "gen-config": "pkl-gen-typescript ./config.pkl -o ./generated",
+    "start": "tsx ./index.ts"
+  }
+}
