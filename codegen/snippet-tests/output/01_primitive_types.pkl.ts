@@ -18,7 +18,7 @@ export interface N01PrimitiveTypes {
 
   nullType: null
 
-  anyType: any
+  anyType: pklTypescript.Any
 
   nothingType: never
 }

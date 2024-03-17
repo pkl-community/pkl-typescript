@@ -4,7 +4,7 @@ import * as pklTypescript from "@pkl-community/pkl-typescript"
 
 // Ref: Module root.
 export interface N05WithPair {
-  x: readonly [string, number]
+  x: pklTypescript.Pair<string, number>
 }
 
 // LoadFromPath loads the pkl module at the given path and evaluates it into a N05WithPair

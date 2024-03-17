@@ -4,25 +4,31 @@ import * as pklTypescript from "@pkl-community/pkl-typescript"
 
 // Ref: Module root.
 export interface N02Collections {
-  listingAny: Array<any>
+  listingAny: Array<pklTypescript.Any>
 
   listingString: Array<string>
 
-  mappingAny: Map<any, any>
+  mappingAny: Map<pklTypescript.Any, pklTypescript.Any>
 
   mappingStringString: Map<string, string>
 
   mappingStringInt: Map<string, number>
 
-  listAny: Array<any>
+  listAny: Array<pklTypescript.Any>
 
   listString: Array<string>
 
-  mapAny: Map<any, any>
+  mapAny: Map<pklTypescript.Any, pklTypescript.Any>
 
   mapStringString: Map<string, string>
 
   mapStringInt: Map<string, number>
+
+  setAny: Set<pklTypescript.Any>
+
+  setString: Set<string>
+
+  setInt: Set<number>
 }
 
 // LoadFromPath loads the pkl module at the given path and evaluates it into a N02Collections

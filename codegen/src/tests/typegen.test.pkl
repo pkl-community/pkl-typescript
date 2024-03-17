@@ -69,10 +69,10 @@ facts {
     generateType(reflect.uint16Type) == "number"
     generateType(reflect.uint32Type) == "number"
     generateType(reflect.uintType) == "number"
-    generateType(reflect.anyType) == "any"
-    generateType(reflect.dynamicType) == "PklTypes.Dynamic"
-    generateType(reflect.dataSizeType) == "PklTypes.DataSize"
-    generateType(reflect.durationType) == "PklTypes.Duration"
+    generateType(reflect.anyType) == "pklTypescript.Any"
+    generateType(reflect.dynamicType) == "pklTypescript.Dynamic"
+    generateType(reflect.dataSizeType) == "pklTypescript.DataSize"
+    generateType(reflect.durationType) == "pklTypescript.Duration"
     generateType(nothingType) == "never"
     generateType(reflect.DeclaredType(reflect.TypeAlias(Char))) == "string"
     generateType(reflect.DeclaredType(reflect.Class(Null))) == "null"
@@ -100,7 +100,7 @@ facts {
     generateType(reflectedNullables.properties["res8"].type) == "Map<string|null, string|null>|null"
   }
   ["pairs"] {
-    generateType(reflectedPairs.properties["res1"].type) == "readonly [string, string]"
-    generateType(reflectedPairs.properties["res2"].type) == "readonly [string, string|null]"
+    generateType(reflectedPairs.properties["res1"].type) == "pklTypescript.Pair<string, string>"
+    generateType(reflectedPairs.properties["res2"].type) == "pklTypescript.Pair<string, string|null>"
   }
 }

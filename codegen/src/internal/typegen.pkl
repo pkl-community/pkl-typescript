@@ -104,13 +104,11 @@ function generatePair(
   enclosing: reflect.TypeDeclaration,
   seenMappings: List<TypescriptMapping>
 ): Type =
-  new Type.Tuple {
+  new Type.Pair {
     elems = type.typeArguments.map((t) -> generateType(t, enclosing, seenMappings))
   }
 
-local function builtInType(typ: String): Type.Declared = new { typeName = typ }
-
-local anyType: Type.Declared = builtInType("any")
+local anyType: Type.Declared = new Type.Declared { typeName = "pklTypescript.Any" }
 
 mappedTypes: Mapping<Class|TypeAlias, Type> = new {
   [Int] = new Type.Declared { typeName = "number" }
@@ -129,28 +127,24 @@ mappedTypes: Mapping<Class|TypeAlias, Type> = new {
   [Any] = anyType
   [Char] = new Type.Declared { typeName = "string" }
   [Duration] = new Type.Declared {
-    `module` = "pkl-types"
-    typeName = "Duration"
-    importPath = "@pkl-community/pkl-types"
+    typeName = "pklTypescript.Duration"
   }
   [DurationUnit] = new Type.Declared {
-    `module` = "pkl-types"
-    typeName = "DurationUnit"
-    importPath = "@pkl-community/pkl-types"
+    typeName = "pklTypescript.DurationUnit"
   }
   [Dynamic] = new Type.Declared {
-    `module` = "pkl-types"
-    typeName = "Dynamic"
-    importPath = "@pkl-community/pkl-types"
+    typeName = "pklTypescript.Dynamic"
   }
   [DataSize] = new Type.Declared {
-    `module` = "pkl-types"
-    typeName = "DataSize"
-    importPath = "@pkl-community/pkl-types"
+    typeName = "pklTypescript.DataSize"
   }
   [DataSizeUnit] = new Type.Declared {
-    `module` = "pkl-types"
-    typeName = "DataSizeUnit"
-    importPath = "@pkl-community/pkl-types"
+    typeName = "pklTypescript.DataSizeUnit"
+  }
+  [IntSeq] = new Type.Declared {
+    typeName = "pklTypescript.IntSeq"
+  }
+  [Regex] = new Type.Declared {
+    typeName = "pklTypescript.Regex"
   }
 }

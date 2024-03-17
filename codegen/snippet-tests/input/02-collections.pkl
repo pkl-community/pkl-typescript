@@ -9,3 +9,6 @@ listString: List<String>
 mapAny: Map
 mapStringString: Map<String, String>
 mapStringInt: Map<String, Int>
+setAny: Set
+setString: Set<String>
+setInt: Set<Int>

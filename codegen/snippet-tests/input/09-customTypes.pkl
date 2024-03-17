@@ -1,0 +1,8 @@
+varAny: Any
+varDymaic: Dynamic
+varDataSizeUnit: DataSizeUnit
+varDataSize: DataSize
+varDuration: Duration
+varIntSeq: IntSeq
+varRegex: Regex
+varPair: Pair<String, Int>
