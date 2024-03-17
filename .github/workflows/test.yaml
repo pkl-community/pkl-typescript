@@ -68,3 +68,4 @@ jobs:
 
       - run: npm install
       - run: npm run test:e2e
+        timeout-minutes: 3
