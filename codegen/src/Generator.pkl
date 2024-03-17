@@ -51,7 +51,7 @@ local modules = allMappings
   .mapValues((`_moduleName`: String?, _mappings: List<TypescriptMapping>) -> new TypescriptModule {
     typescriptModule = _moduleName
     `module` = _mappings.first.source.enclosingDeclaration
-    mappings = allMappings
+    mappings = _mappings
   })
 
 output {
