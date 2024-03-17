@@ -10,9 +10,11 @@ jobs:
       contents: write
     concurrency: publish-single-concurrency
 
+    # Based on:
+    # https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages#publishing-packages-to-the-npm-registry
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20.x
           cache: npm
