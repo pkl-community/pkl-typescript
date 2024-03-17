@@ -25,7 +25,7 @@ jobs:
       - name: Run tests
         run: |
           tests=$(find ./codegen/src/ -name '*.test.pkl')
-          pkl test "$tests"
+          pkl test $tests
 
   pkl-snippet:
     runs-on: ubuntu-latest
