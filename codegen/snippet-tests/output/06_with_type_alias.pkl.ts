@@ -16,8 +16,10 @@ export interface MyClassToBeAliased {
   b: number
 }
 
+// Ref: Pkl type `06-withTypeAlias.MyStringAlias`.
 type MyStringAlias = string
 
+// Ref: Pkl type `06-withTypeAlias.MyAliasedClass`.
 type MyAliasedClass = MyClassToBeAliased
 
 // LoadFromPath loads the pkl module at the given path and evaluates it into a N06WithTypeAlias

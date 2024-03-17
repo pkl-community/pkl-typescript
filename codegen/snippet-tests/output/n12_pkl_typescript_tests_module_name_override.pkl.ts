@@ -14,6 +14,7 @@ export interface MyCustomClassName {
   name: string
 }
 
+// Ref: Pkl type `n12.pkl.typescript.tests.moduleNameOverride.AliasName`.
 type ThisTypeAlias = "x" | "y" | MyCustomClassName
 
 // LoadFromPath loads the pkl module at the given path and evaluates it into a N12TypescriptGeneratedInterface

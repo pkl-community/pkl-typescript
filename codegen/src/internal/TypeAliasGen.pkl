@@ -10,4 +10,8 @@ typealiaz: reflect.TypeAlias = mapping.source as reflect.TypeAlias
 
 type: Type = typegen.generateType(typealiaz.referent, typealiaz, mappings)
 
-contents = "type \(mapping.name) = \(type.render(typescriptModule))"
+contents = new Listing {
+  "// Ref: Pkl type `\(typealiaz.enclosingDeclaration.name).\(typealiaz.name)`."
+
+  "type \(module.mapping.name) = \(type.render(module.typescriptModule))"
+}.join("\n")
