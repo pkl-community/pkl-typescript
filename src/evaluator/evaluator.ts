@@ -56,13 +56,16 @@ export class EvaluatorImpl implements Evaluator {
   moduleReaders: ModuleReader[] = []
   randState: bigint;
 
-  constructor(private evaluatorId: bigint, private manager: EvaluatorManager) {
+  constructor(public evaluatorId: bigint, private manager: EvaluatorManager) {
     this.pendingRequests = new Map()
     this.randState = evaluatorId
   }
 
   close(): void {
-    this.manager.close()
+    if (this.closed) {
+      return
+    }
+    return this.manager.closeEvaluator(this)
   }
 
   async evaluateExpression<T>(source: ModuleSource, expr: string): Promise<Any> {
