@@ -1,5 +1,9 @@
+// Primitive unions
+
 x: "one"|"another"
 y: String|Int
+
+// Class union
 
 class X1 {
   firstName: String
@@ -10,3 +14,26 @@ class X2 {
 }
 
 x1or2: X1|X2
+
+// Typealias union
+
+typealias PersonName = String(!isEmpty)
+typealias PersonAge = Int(isBetween(0, 120))
+typealias PersonProperty = PersonName|PersonAge
+personFact: PersonProperty
+
+// Discriminated union
+
+class Apple {
+  name: "apple"
+  sweetness: Int
+}
+
+class Orange {
+  name: "orange"
+  tartness: Int
+}
+
+typealias Fruit = Apple|Orange
+aFruit: Apple|Orange
+anotherFruit: Fruit
