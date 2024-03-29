@@ -164,13 +164,6 @@ function renderDocComment(docComment: String, indent: String) =
     .join("\n")
 
 
-function canBeNormalizedToEnumName(name: String) =
-  name == "" || splitNameOnNonLettersOrDigits(name).length > 0
-
-function normalizeEnumName(name: String) =
-  if (name == "") "Empty"
-  else normalizeName(name)
-
 function splitNameOnNonLettersOrDigits(name: String) =
   name.split(Regex(#"(?u)[^\p{L}\d]"#))
 

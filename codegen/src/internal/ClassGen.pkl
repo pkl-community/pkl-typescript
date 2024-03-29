@@ -15,11 +15,6 @@ classInfo: TypescriptMapping.Class = mapping as TypescriptMapping.Class
 local isModule: Boolean = clazz.enclosingDeclaration.moduleClass == clazz
 
 contents = new Listing {
-  when (!imports.isEmpty) {
-    utils.renderImports(imports)
-    ""
-  }
-
   when (interface != null) {
     if (isModule) "// Ref: Module root." else "// Ref: Pkl class `\(clazz.enclosingDeclaration.name).\(clazz.name)`."
 
@@ -35,13 +30,12 @@ local superClass: TypescriptMapping.Class? = mappings.findOrNull((c) -> c is Typ
 
 local fields: Map<String, TypescriptInterfaceProperty> = getFields(clazz, mappings)
 
-local imports =
+imports =
   fields.values
     .flatMap((f) -> f.type.imports)
     .filter((i) -> i != classInfo.typescriptModule).distinct
   + (if (superClass != null && superClass.typescriptModule != classInfo.typescriptModule) List(superClass.typescriptModule) else List())
   + (if (isModule && !isAbstract)
-    // List("../src")
     List("@pkl-community/pkl-typescript")
     else List())
 
@@ -61,11 +55,11 @@ local function isSameType(typeA: reflect.Type, typeB: reflect.Type) =
     true
   else if (typeA is reflect.StringLiteralType && typeB is reflect.StringLiteralType)
     typeA.value == typeB.value
-  // union types turn into Go's `any`, so we can say that this is always fine.
-  // TODO(Jason): this was true in Go, what does it mean here?
-  // TODO(Jason): need to figure out how to deep-check union types structures??
   else if (typeA is reflect.UnionType && typeB is reflect.UnionType)
-    true
+    typeA.members.length == typeB.members.length &&
+    typeA.members
+      .zip(typeB.members)
+      .every((pair) -> isSameType(pair.first, pair.second))
   // remaining types: `FunctionType`, `TypeParameter`, `ModuleType`.
   // we can actually check if `ModuleType` refers to the same type by checking if the enclosing declaration is the same,
   // but we will pretend it is always false for now.
@@ -88,11 +82,10 @@ function getFields(
           // Okay if the property is overridden but does not define a type, but don't render as its own field.
           // E.g. `class Foo extends Bar { bar = "mybar" }`
           else if (prop.type is reflect.UnknownType) !isSuperOpen
-          // Otherwise, the property's type has been overridden and this is impossible to
-          // represent in Go.
-          // TODO(Jason): I think this _can_ be handled by how TypeScript does interface inheritance.
+          // Otherwise, the property's type has been overridden, and this is currently
+          // not supported - would require something like `extends Omit<ParentClass, 'overriddenField'>`
           else throw("""
-              Illegal: Class `\(clazz.reflectee)` overrides property `\(propName)`. This is not supported when generating Go.
+              Illegal: Class `\(clazz.reflectee)` overrides property `\(propName)`. This is not supported when generating TypeScript.
 
               \(prop.location.displayUri)
               """)
