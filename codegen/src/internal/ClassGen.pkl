@@ -65,6 +65,15 @@ local function isSameType(typeA: reflect.Type, typeB: reflect.Type) =
   // but we will pretend it is always false for now.
   else false
 
+// TypeScript allows extending interfaces to override properties from the parent interface as long
+// as the new type is compatible with the parent property's type. One useful example of this, and
+// the only current supported way below, is when the parent type is String-type, and the child type is a string-literal type.
+// In the future we could add more detailed compatibility checks.
+local function isCompatibleType(parentType: reflect.Type, childType: reflect.Type) =
+  parentType is reflect.DeclaredType &&
+  parentType == reflect.stringType &&
+  childType is reflect.StringLiteralType
+
 // visible for testing
 function getFields(
   clazz: reflect.Class,
@@ -78,14 +87,14 @@ function getFields(
           // don't render hidden members
           if (prop.modifiers.contains("hidden")) false
           // Okay if there is no property override, or if the super property has the same type.
-          else if (superProp == null || isSameType(superProp.type, prop.type)) true
+          else if (superProp == null || isSameType(superProp.type, prop.type) || isCompatibleType(superProp.type, prop.type)) true
           // Okay if the property is overridden but does not define a type, but don't render as its own field.
           // E.g. `class Foo extends Bar { bar = "mybar" }`
           else if (prop.type is reflect.UnknownType) !isSuperOpen
           // Otherwise, the property's type has been overridden, and this is currently
           // not supported - would require something like `extends Omit<ParentClass, 'overriddenField'>`
           else throw("""
-              Illegal: Class `\(clazz.reflectee)` overrides property `\(propName)`. This is not supported when generating TypeScript.
+              Illegal: Class `\(clazz.reflectee)` overrides property `\(propName)`. This is only supported by TypeScript when the new type is compatible with the parent type.
 
               \(prop.location.displayUri)
               """)

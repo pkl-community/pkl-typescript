@@ -7,8 +7,10 @@ value: MyCustomClass
 
 abstract class MyAbstractClass {
   someString: String
+  overrideableStringType: String
 }
 
 class MyConcreteClass extends MyAbstractClass {
   anotherString: String
+  overrideableStringType: "string literal type"
 }

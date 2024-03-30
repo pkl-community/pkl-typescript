@@ -17,11 +17,15 @@ export interface MyCustomClass {
 // Ref: Pkl class `04-withClass.MyAbstractClass`.
 export interface MyAbstractClass {
   someString: string
+
+  overrideableStringType: string
 }
 
 // Ref: Pkl class `04-withClass.MyConcreteClass`.
 export interface MyConcreteClass extends MyAbstractClass {
   anotherString: string
+
+  overrideableStringType: "string literal type"
 }
 
 // LoadFromPath loads the pkl module at the given path and evaluates it into a N04WithClass
