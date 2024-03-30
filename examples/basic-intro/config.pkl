@@ -1,0 +1,3 @@
+firstName: String = "Phillip"
+lastName: String = "Pklton"
+age: Int8 = 76
