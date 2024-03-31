@@ -61,11 +61,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
 
-      - name: Install pkl
-        uses: pkl-community/setup-pkl@v0
-        with:
-          pkl-version: ${{ matrix.pklVersion }}
-
       - run: npm install
       - run: npm run test:e2e
         timeout-minutes: 3
