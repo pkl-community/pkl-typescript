@@ -72,6 +72,10 @@ Until then, minor and patch releases may contain breaking changes.
 
 ## Appendix
 
+### Pkl Binary Version
+
+This package has a peer dependency on `@pkl-community/pkl`, to ensure a Pkl binary is installed. You can use an alternative Pkl binary (for either the evaluator or codegen) by setting the environment variable `PKL_EXEC` with the path to a Pkl binary.
+
 ### Type Mappings
 
 When code-generating TypeScript type definitions from Pkl schemas, each Pkl type is converted to an associated TypeScript type, as per the table below. While in pre-release, these mappings are subject to change!
