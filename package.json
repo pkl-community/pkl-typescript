@@ -43,6 +43,9 @@
     "consola": "^3.2.3",
     "msgpackr": "^1.10.1"
   },
+  "peerDependencies": {
+    "@pkl-community/pkl": "*"
+  },
   "bin": {
     "pkl-gen-typescript": "./dist/bin/pkl-gen-typescript.js"
   }
