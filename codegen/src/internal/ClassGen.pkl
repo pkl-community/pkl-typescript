@@ -69,10 +69,9 @@ local function isSameType(typeA: reflect.Type, typeB: reflect.Type) =
   // but we will pretend it is always false for now.
   else false
 
-// TypeScript allows extending interfaces to override properties from the parent interface as long
-// as the new type is compatible with the parent property's type. One useful example of this, and
-// the only current supported way below, is when the parent type is String-type, and the child type is a string-literal type.
-// In the future we could add more detailed compatibility checks.
+// TypeScript allows extending interfaces to override properties from the parent interface, as long
+// as the new type is compatible with the parent property's type. This check is not exhaustive and
+// will likely be updated over time.
 local function isCompatibleType(parentType: reflect.Type, childType: reflect.Type) =
   (
     parentType is reflect.DeclaredType &&
