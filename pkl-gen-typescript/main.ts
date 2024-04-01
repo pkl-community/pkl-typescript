@@ -1,22 +1,15 @@
-import { generateTypescript } from "./generate";
-import { GeneratorSettings, load as loadGeneratorSettings } from "./generated";
+import chalk from "chalk";
+import { boolean, command, flag, option, optional, restPositionals, run, string } from "cmd-ts";
+import consola, { LogLevels } from "consola";
+import { access } from "fs/promises";
 import { join } from "path";
 import { cwd } from "process";
-import { PreconfiguredOptions, newEvaluator } from "../src";
 import { pathToFileURL } from "url";
-import {
-  command,
-  run,
-  string,
-  boolean,
-  restPositionals,
-  option,
-  optional,
-  flag,
-} from "cmd-ts";
-import consola, { LogLevels } from "consola";
-import chalk from "chalk";
-import { access } from "fs/promises";
+
+import { newEvaluator, PreconfiguredOptions } from "../src";
+import { generateTypescript } from "./generate";
+import type { GeneratorSettings } from "./generated";
+import { load as loadGeneratorSettings } from "./generated";
 
 export const cli = command({
   name: "pkl-gen-typescript",
@@ -50,13 +43,7 @@ export const cli = command({
       description: "Enable debug logging",
     }),
   },
-  handler: async ({
-    pklModules,
-    settingsFilePath,
-    outputDirectory,
-    dryRun,
-    verbose,
-  }) => {
+  handler: async ({ pklModules, settingsFilePath, outputDirectory, dryRun, verbose }) => {
     /*
       Four ways to set the log level, in order of precedence:
       - CLI flag "-v", sets log level to "debug"
@@ -65,18 +52,15 @@ export const cli = command({
       - environment variable DEBUG, sets log level to "debug"
       - defaults to "info"
     */
-    const x = Object.entries(process.env);
     const logLevel = verbose
       ? LogLevels.debug
       : (parseInt(process.env.CONSOLA_LEVEL ?? "") || null) ??
-        (process.env.LOG_LEVEL !== undefined &&
-          Object.keys(LogLevels).includes(process.env.LOG_LEVEL.toLowerCase()))
-      ? LogLevels[
-          process.env.LOG_LEVEL?.toLowerCase() as keyof typeof LogLevels
-        ]
-      : process.env.DEBUG
-      ? LogLevels.debug
-      : LogLevels.info;
+          (process.env.LOG_LEVEL !== undefined &&
+            Object.keys(LogLevels).includes(process.env.LOG_LEVEL.toLowerCase()))
+        ? LogLevels[process.env.LOG_LEVEL?.toLowerCase() as keyof typeof LogLevels]
+        : process.env.DEBUG
+          ? LogLevels.debug
+          : LogLevels.info;
     consola.level = logLevel;
 
     if (!pklModules.length) {
@@ -101,9 +85,7 @@ export const cli = command({
         await access(settingsFile);
         consola.info(`Using settings file at ${chalk.cyan(settingsFile)}`);
       } catch (err) {
-        consola.fatal(
-          `Unable to read settings file at ${chalk.cyan(settingsFile)}.`
-        );
+        consola.fatal(`Unable to read settings file at ${chalk.cyan(settingsFile)}.`);
         consola.debug(err);
         process.exit(1);
       }
@@ -136,5 +118,5 @@ export default async function main(args: string[]) {
 }
 
 if (require.main === module) {
-  main(process.argv.slice(2));
+  void main(process.argv.slice(2));
 }
