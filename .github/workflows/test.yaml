@@ -25,6 +25,7 @@ jobs:
       - name: Run tests
         run: |
           tests=$(find ./codegen/src/ -name '*.test.pkl')
+          # shellcheck disable=SC2086
           pkl test $tests
 
   pkl-snippet:
