@@ -46,7 +46,11 @@ local function getAllProperties(clazz: reflect.Class?): List<reflect.Property> =
 
 local function isSameType(typeA: reflect.Type, typeB: reflect.Type) =
   if (typeA is reflect.DeclaredType && typeB is reflect.DeclaredType)
-    typeA.referent.reflectee == typeB.referent.reflectee
+    typeA.referent.reflectee == typeB.referent.reflectee &&
+    typeA.typeArguments.length == typeB.typeArguments.length &&
+    typeA.typeArguments
+      .zip(typeB.typeArguments)
+      .every((pair) -> isSameType(pair.first, pair.second))
   else if (typeA is reflect.NullableType && typeB is reflect.NullableType)
     isSameType(typeA.member, typeB.member)
   else if (typeA is reflect.NothingType && typeB is reflect.NothingType)
@@ -57,8 +61,8 @@ local function isSameType(typeA: reflect.Type, typeB: reflect.Type) =
     typeA.value == typeB.value
   else if (typeA is reflect.UnionType && typeB is reflect.UnionType)
     typeA.members.length == typeB.members.length &&
-    typeA.members
-      .zip(typeB.members)
+    typeA.members.sortBy((m) -> m.referent.reflectee.toString())
+      .zip(typeB.members.sortBy((m) -> m.referent.reflectee.toString()))
       .every((pair) -> isSameType(pair.first, pair.second))
   // remaining types: `FunctionType`, `TypeParameter`, `ModuleType`.
   // we can actually check if `ModuleType` refers to the same type by checking if the enclosing declaration is the same,
@@ -70,9 +74,42 @@ local function isSameType(typeA: reflect.Type, typeB: reflect.Type) =
 // the only current supported way below, is when the parent type is String-type, and the child type is a string-literal type.
 // In the future we could add more detailed compatibility checks.
 local function isCompatibleType(parentType: reflect.Type, childType: reflect.Type) =
-  parentType is reflect.DeclaredType &&
-  parentType == reflect.stringType &&
-  childType is reflect.StringLiteralType
+  (
+    parentType is reflect.DeclaredType &&
+    (
+      (
+        // String type can be overridden by string literal type
+        parentType == reflect.stringType &&
+        childType is reflect.StringLiteralType
+      ) ||
+      (
+        // Same type, different but compatible type arguments
+        childType is reflect.DeclaredType &&
+        parentType.referent.reflectee == childType.referent.reflectee &&
+        (
+          parentType.typeArguments
+            .zip(childType.typeArguments)
+            .every((pair) ->
+              isSameType(pair.first, pair.second) ||
+              isCompatibleType(pair.first, pair.second)
+            )
+        )
+      )
+    )
+  )
+  ||
+  (
+    parentType is reflect.UnionType &&
+    (
+      (
+        // Child union can be a subset of the parent union's members
+        childType is reflect.UnionType &&
+        childType.members.every((m) -> parentType.members.contains(m))
+      )
+      // Or child type can be one of the types from the parent union
+      || parentType.members.contains(childType)
+    )
+  )
 
 // visible for testing
 function getFields(
