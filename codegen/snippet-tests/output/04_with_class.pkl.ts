@@ -26,7 +26,7 @@ export interface MyAbstractClass {
 
   overridableMap1: Map<string, string | number>
 
-  overridableMap2: Map<string, string | number | null>
+  overridableMap2: Map<string, string | number>
 
   overridableUnion1: number | string | Array<string>
 
