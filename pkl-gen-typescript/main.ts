@@ -14,7 +14,7 @@ import {
   optional,
   flag,
 } from "cmd-ts";
-import consola, { LogLevel, LogLevels } from "consola";
+import consola, { LogLevels } from "consola";
 import chalk from "chalk";
 import { access } from "fs/promises";
 
