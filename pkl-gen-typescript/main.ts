@@ -14,7 +14,7 @@ import {
   optional,
   flag,
 } from "cmd-ts";
-import consola from "consola";
+import consola, { LogLevel, LogLevels } from "consola";
 import chalk from "chalk";
 import { access } from "fs/promises";
 
@@ -57,10 +57,27 @@ export const cli = command({
     dryRun,
     verbose,
   }) => {
-    consola.level = verbose
-      ? 4
+    /*
+      Four ways to set the log level, in order of precedence:
+      - CLI flag "-v", sets log level to "debug"
+      - environment variable CONSOLA_LEVEL set to an integer
+      - environment variable LOG_LEVEL set to a string that is a valid log level name
+      - environment variable DEBUG, sets log level to "debug"
+      - defaults to "info"
+    */
+    const x = Object.entries(process.env);
+    const logLevel = verbose
+      ? LogLevels.debug
       : (parseInt(process.env.CONSOLA_LEVEL ?? "") || null) ??
-        (process.env.DEBUG ? 4 : 3);
+        (process.env.LOG_LEVEL !== undefined &&
+          Object.keys(LogLevels).includes(process.env.LOG_LEVEL.toLowerCase()))
+      ? LogLevels[
+          process.env.LOG_LEVEL?.toLowerCase() as keyof typeof LogLevels
+        ]
+      : process.env.DEBUG
+      ? LogLevels.debug
+      : LogLevels.info;
+    consola.level = logLevel;
 
     if (!pklModules.length) {
       consola.error("You must provide at least one file to evaluate.");
