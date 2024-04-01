@@ -22,10 +22,7 @@ module.exports = {
     "@typescript-eslint/no-throw-literal": "error",
     "@typescript-eslint/switch-exhaustiveness-check": "error",
     // Specifically allow "_" as a placeholder argument name
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      { argsIgnorePattern: "^_$" },
-    ],
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_$" }],
   },
 
   overrides: [
