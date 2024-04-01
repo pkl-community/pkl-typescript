@@ -103,5 +103,5 @@ export default async function main(args: string[]) {
 }
 
 if (require.main === module) {
-    main(process.argv.slice(2));
+  void main(process.argv.slice(2));
 }
