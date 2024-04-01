@@ -19,6 +19,18 @@ export interface MyAbstractClass {
   someString: string
 
   overrideableStringType: string
+
+  overridableListing1: Array<string | number>
+
+  overridableListing2: Array<string | number>
+
+  overridableMap1: Map<string, string | number>
+
+  overridableMap2: Map<string, string | number | null>
+
+  overridableUnion1: number | string | Array<string>
+
+  overridableUnion2: number | string
 }
 
 // Ref: Pkl class `04-withClass.MyConcreteClass`.
@@ -26,6 +38,18 @@ export interface MyConcreteClass extends MyAbstractClass {
   anotherString: string
 
   overrideableStringType: "string literal type"
+
+  overridableListing1: Array<number | string>
+
+  overridableListing2: Array<string>
+
+  overridableMap1: Map<string, number | string>
+
+  overridableMap2: Map<string, string>
+
+  overridableUnion1: string | number
+
+  overridableUnion2: string
 }
 
 // LoadFromPath loads the pkl module at the given path and evaluates it into a N04WithClass

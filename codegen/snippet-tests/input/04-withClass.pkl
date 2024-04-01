@@ -8,9 +8,21 @@ value: MyCustomClass
 abstract class MyAbstractClass {
   someString: String
   overrideableStringType: String
+  overridableListing1: Listing<String | Int>
+  overridableListing2: Listing<String | Int>
+  overridableMap1: Map<String, String | Int>
+  overridableMap2: Map<String, String | Int>
+  overridableUnion1: Int|String|List<String>
+  overridableUnion2: Int|String
 }
 
 class MyConcreteClass extends MyAbstractClass {
   anotherString: String
   overrideableStringType: "string literal type"
+  overridableListing1: Listing<Int | String>
+  overridableListing2: Listing<String>
+  overridableMap1: Map<String, Int | String>
+  overridableMap2: Map<String, String>
+  overridableUnion1: String|Int
+  overridableUnion2: String
 }
