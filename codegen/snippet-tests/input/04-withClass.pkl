@@ -1,6 +1,9 @@
 class MyCustomClass {
   x: String
   y: Int
+
+  // Function type properties should not be included in codegen
+  funcType: (String) -> (String)
 }
 
 value: MyCustomClass

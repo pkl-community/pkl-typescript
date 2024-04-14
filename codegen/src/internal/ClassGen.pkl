@@ -120,8 +120,8 @@ function getFields(
     clazz.properties
       .filter((propName, prop: reflect.Property) ->
         let (superProp = superProperties.findOrNull((it) -> it.name == prop.name))
-          // don't render hidden members
-          if (prop.modifiers.contains("hidden")) false
+          // don't render hidden members or functions
+          if (prop.modifiers.contains("hidden") || prop.type is reflect.FunctionType) false
           // Okay if there is no property override, or if the super property has the same type.
           else if (superProp == null || isSameType(superProp.type, prop.type) || isCompatibleType(superProp.type, prop.type)) true
           // Okay if the property is overridden but does not define a type, but don't render as its own field.
