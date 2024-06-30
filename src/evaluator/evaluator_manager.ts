@@ -1,7 +1,8 @@
 import {EvaluatorImpl, Evaluator} from "./evaluator";
-import {CreateEvaluator, OutgoingMessage, packMessage} from "../types/outgoing";
+import {CloseEvaluator, CreateEvaluator, OutgoingMessage, packMessage} from "../types/outgoing";
 import * as msgpackr from "msgpackr";
 import {
+  codeCloseEvaluator,
   codeEvaluateLog,
   codeEvaluateRead,
   codeEvaluateReadModule,
@@ -73,6 +74,7 @@ export class EvaluatorManager implements EvaluatorManagerInterface {
   }> = new Map()
   private evaluators: Map<bigint, EvaluatorImpl> = new Map()
   private closed: boolean = false
+  private exited: boolean = false
   private version?: string
   private cmd: ChildProcessByStdio<Writable, Readable, null>;
   private readonly msgpackConfig: msgpackr.Options = {int64AsType: 'bigint', useRecords: false, encodeUndefinedAsNil: true}
@@ -89,6 +91,7 @@ export class EvaluatorManager implements EvaluatorManagerInterface {
 
     this.decode(this.cmd.stdout).catch(console.error)
     this.cmd.on('close', () => {
+      this.exited = true
       this.pendingEvaluators.forEach(({reject}) => {
         reject(new Error("pkl command exited"))
       })
@@ -120,6 +123,9 @@ export class EvaluatorManager implements EvaluatorManagerInterface {
   }
 
   async send(out: OutgoingMessage) {
+    if (this.exited) {
+      return
+    }
     await new Promise<void>((resolve, reject) => this.cmd.stdin.write(packMessage(this.encoder, out), (error) => {
       if (error) {
         reject(error)
@@ -136,6 +142,16 @@ export class EvaluatorManager implements EvaluatorManagerInterface {
       return undefined
     }
     return ev
+  }
+
+  closeEvaluator(evaluator: EvaluatorImpl) {
+    const closeEvaluator: CloseEvaluator = {
+      evaluatorId: evaluator.evaluatorId,
+      code: codeCloseEvaluator,
+    }
+    this.send(closeEvaluator) // best effort
+    this.evaluators.delete(evaluator.evaluatorId)
+    evaluator.closed = true
   }
 
   private async decode(stdout: Readable) {
