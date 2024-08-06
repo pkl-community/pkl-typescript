@@ -1,5 +1,7 @@
+import { loadFromPath } from "@pkl-community/pkl-typescript";
 import express from "express";
-import { loadFromPath } from "./generated/config_schema.pkl";
+
+import type { ConfigSchema } from "./generated/config_schema.pkl";
 
 const app = express();
 
@@ -11,11 +13,15 @@ app.get("/", (_, res) => {
 const configFile = `config.${process.env.NODE_ENV ?? "dev"}.pkl`;
 
 // Use pkl-typescript to load and evaluate the selected Pkl file
-loadFromPath(configFile).then((config) => {
-  console.log("Loaded config values from Pkl:", JSON.stringify(config));
+loadFromPath<ConfigSchema>(configFile)
+  .then((config) => {
+    console.log("Loaded config values from Pkl:", JSON.stringify(config));
 
-  // `config` is a typed object, of the schema given in ConfigSchema.pkl
-  app.listen(config.port, config.address, () => {
-    console.log("Server started");
+    // `config` is a typed object, of the schema given in ConfigSchema.pkl
+    app.listen(config.port, config.address, () => {
+      console.log("Server started");
+    });
+  })
+  .catch((err: unknown) => {
+    console.error(err);
   });
-});
