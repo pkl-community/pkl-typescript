@@ -53,17 +53,3 @@ export interface MyConcreteClass extends MyAbstractClass {
 
   overridableUnion2: string
 }
-
-// LoadFromPath loads the pkl module at the given path and evaluates it into a N04WithClass
-export const loadFromPath = async (path: string): Promise<N04WithClass> => {
-  const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);
-  try {
-    const result = await load(evaluator, pklTypescript.FileSource(path));
-    return result
-  } finally {
-    evaluator.close()
-  }
-};
-
-export const load = (evaluator: pklTypescript.Evaluator, source: pklTypescript.ModuleSource): Promise<N04WithClass> =>
-  evaluator.evaluateModule(source) as Promise<N04WithClass>;

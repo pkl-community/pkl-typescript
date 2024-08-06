@@ -23,17 +23,3 @@ type MyStringAlias = string
 
 // Ref: Pkl type `06-withTypeAlias.MyAliasedClass`.
 type MyAliasedClass = MyClassToBeAliased
-
-// LoadFromPath loads the pkl module at the given path and evaluates it into a N06WithTypeAlias
-export const loadFromPath = async (path: string): Promise<N06WithTypeAlias> => {
-  const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);
-  try {
-    const result = await load(evaluator, pklTypescript.FileSource(path));
-    return result
-  } finally {
-    evaluator.close()
-  }
-};
-
-export const load = (evaluator: pklTypescript.Evaluator, source: pklTypescript.ModuleSource): Promise<N06WithTypeAlias> =>
-  evaluator.evaluateModule(source) as Promise<N06WithTypeAlias>;
