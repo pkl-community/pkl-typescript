@@ -29,3 +29,11 @@ class MyConcreteClass extends MyAbstractClass {
   overridableUnion1: String|Int
   overridableUnion2: String
 }
+
+open class MyOpenClass {
+  someString: String
+}
+
+class MySubclassOfOpen extends MyOpenClass {
+  someInt: Int
+}
