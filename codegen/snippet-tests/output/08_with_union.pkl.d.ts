@@ -54,17 +54,3 @@ type PersonName = string
 
 // Ref: Pkl type `08-withUnion.PersonAge`.
 type PersonAge = number
-
-// LoadFromPath loads the pkl module at the given path and evaluates it into a N08WithUnion
-export const loadFromPath = async (path: string): Promise<N08WithUnion> => {
-  const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);
-  try {
-    const result = await load(evaluator, pklTypescript.FileSource(path));
-    return result
-  } finally {
-    evaluator.close()
-  }
-};
-
-export const load = (evaluator: pklTypescript.Evaluator, source: pklTypescript.ModuleSource): Promise<N08WithUnion> =>
-  evaluator.evaluateModule(source) as Promise<N08WithUnion>;

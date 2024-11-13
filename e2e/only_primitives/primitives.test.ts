@@ -1,13 +1,13 @@
 import { describe, expect, it } from "@jest/globals";
+import { loadFromPath } from "@pkl-community/pkl-typescript";
+import { join } from "path";
 
 import pklGenTypescript from "../../pkl-gen-typescript/main";
-import { join } from "path";
 
 describe("E2E of config with only primitive values", () => {
   it("can generate TypeScript sources and load valid values", async () => {
     await pklGenTypescript([join(__dirname, "schema.pkl")]);
-    const configPkl = await import(join(__dirname, "../../.out/schema.pkl.ts"));
-    const config = await configPkl.loadFromPath(join(__dirname, "correct.pkl"));
+    const config = await loadFromPath(join(__dirname, "correct.pkl"));
     expect(config).toStrictEqual({
       addr: "localhost",
       port: 3000,
@@ -22,12 +22,7 @@ describe("E2E of config with only primitive values", () => {
     "can generate TypeScript sources but error on evaluating invalid values: %s",
     async (_, fileBase) => {
       await pklGenTypescript([join(__dirname, "schema.pkl")]);
-      const configPkl = await import(
-        join(__dirname, "../../.out/schema.pkl.ts")
-      );
-      await expect(
-        configPkl.loadFromPath(join(__dirname, `${fileBase}.pkl`))
-      ).rejects.toThrowError();
-    }
+      await expect(loadFromPath(join(__dirname, `${fileBase}.pkl`))).rejects.toThrowError();
+    },
   );
 });

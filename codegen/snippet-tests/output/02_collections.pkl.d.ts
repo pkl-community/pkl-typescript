@@ -32,17 +32,3 @@ export interface N02Collections {
 
   setInt: Set<number>
 }
-
-// LoadFromPath loads the pkl module at the given path and evaluates it into a N02Collections
-export const loadFromPath = async (path: string): Promise<N02Collections> => {
-  const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);
-  try {
-    const result = await load(evaluator, pklTypescript.FileSource(path));
-    return result
-  } finally {
-    evaluator.close()
-  }
-};
-
-export const load = (evaluator: pklTypescript.Evaluator, source: pklTypescript.ModuleSource): Promise<N02Collections> =>
-  evaluator.evaluateModule(source) as Promise<N02Collections>;
