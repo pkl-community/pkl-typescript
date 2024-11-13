@@ -54,6 +54,16 @@ export interface MyConcreteClass extends MyAbstractClass {
   overridableUnion2: string
 }
 
+// Ref: Pkl class `04-withClass.MyOpenClass`.
+export interface MyOpenClass {
+  someString: string
+}
+
+// Ref: Pkl class `04-withClass.MySubclassOfOpen`.
+export interface MySubclassOfOpen extends MyOpenClass {
+  someInt: number
+}
+
 // LoadFromPath loads the pkl module at the given path and evaluates it into a N04WithClass
 export const loadFromPath = async (path: string): Promise<N04WithClass> => {
   const evaluator = await pklTypescript.newEvaluator(pklTypescript.PreconfiguredOptions);
