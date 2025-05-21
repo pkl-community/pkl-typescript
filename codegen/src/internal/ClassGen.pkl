@@ -161,13 +161,6 @@ local interface: String = new Listing {
     + "{"
   )
 
-  when (isSuperOpen) {
-    // TODO(Jason): what was this for?
-    // "\t" + superClass!!.struct.type.render(classInfo.goPackage)
-    when (!properties.isEmpty) {
-      ""
-    }
-  }
   for (pklPropertyName, field in fields) {
     when (pklPropertyName != fields.keys.first) {
       ""
