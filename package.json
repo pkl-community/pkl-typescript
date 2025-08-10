@@ -22,9 +22,9 @@
     "test:e2e": "jest e2e",
     "test:codegen": "pkl test $(find ./codegen/src/ -name '*.test.pkl')",
     "test:snippet": "pkl test ./codegen/snippet-tests/test.pkl",
-    "test:jest": "jest",
+    "test:jest": "npm run test:e2e",
     "test:pkl": "npm run test:codegen && npm run test:snippet",
-    "test": "npm run test:pkl && npm run test:e2e",
+    "test": "npm run test:jest && npm run test:pkl",
     "dev": "tsc && tsx pkl-gen-typescript/main.ts ./examples/basic-intro/config.pkl",
     "gen-snippets": "npm run dev -- --settings-file codegen/snippet-tests/generator-settings.pkl -o codegen/snippet-tests/output codegen/snippet-tests/input/*.pkl"
   },
