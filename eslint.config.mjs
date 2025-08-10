@@ -13,10 +13,12 @@ export default tseslint.config(
   prettier,
 
   {
-    // config with just ignores is the replacement for `.eslintignore`
+    // A config object with just an `ignores` key is the replacement for `.eslintignore`.
+    // Patterns for all files and directories that will be ignored by eslint.
     ignores: [
       "**/bin/**",
       "**/dist/**",
+      "**/.out/**",
       "*/**/*.js",
       "*/**/*.d.ts",
       "*/**/*.pkl.js",
@@ -24,7 +26,7 @@ export default tseslint.config(
     ],
   },
   /**
-   * Global configuration settings
+   * Global configuration settings (for all configuration objects).
    */
   {
     plugins: {
@@ -63,10 +65,10 @@ export default tseslint.config(
   },
 
   /**
-   * Config specific only to config files in project root
+   * Config specific only to configuration files in project root
    */
   {
-    name: "config files",
+    name: "Configuration files in project root",
     files: ["./*.js", "./.*.js", "./*.mjs"],
     extends: [tseslint.configs.disableTypeChecked],
     rules: {
@@ -74,10 +76,10 @@ export default tseslint.config(
     },
   },
   /**
-   * Config specific only to test files
+   * Config specific to test files only.
    */
   {
-    name: "test files",
+    name: "Test files",
     files: ["**/*.test.ts"],
     plugins: { jest: pluginJest },
     languageOptions: {
