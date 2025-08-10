@@ -23,7 +23,7 @@
     "test:codegen": "pkl test $(find ./codegen/src/ -name '*.test.pkl')",
     "test:snippet": "pkl test ./codegen/snippet-tests/test.pkl",
     "test": "npm run test:codegen && npm run test:snippet && npm run test:e2e",
-    "dev": "tsx pkl-gen-typescript/main.ts",
+    "dev": "tsc && tsx pkl-gen-typescript/main.ts ./examples/basic-intro/config.pkl",
     "gen-snippets": "npm run dev -- --settings-file codegen/snippet-tests/generator-settings.pkl -o codegen/snippet-tests/output codegen/snippet-tests/input/*.pkl"
   },
   "devDependencies": {
