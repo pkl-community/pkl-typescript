@@ -27,7 +27,6 @@
     "gen-snippets": "npm run dev -- --settings-file codegen/snippet-tests/generator-settings.pkl -o codegen/snippet-tests/output codegen/snippet-tests/input/*.pkl"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.32.0",
     "@jest/globals": "^29.7.0",
     "@types/node": "^18.19.18",
