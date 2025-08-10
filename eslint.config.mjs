@@ -18,7 +18,6 @@ export default tseslint.config(
     ignores: [
       "**/bin/**",
       "**/dist/**",
-      "**/.out/**",
       "*/**/*.js",
       "*/**/*.d.ts",
       "*/**/*.pkl.js",
